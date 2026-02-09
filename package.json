@@ -1,0 +1,59 @@
+{
+    "name": "quickback-better-auth-account-ui",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "clean": "rm -rf dist",
+        "build": "pnpm typecheck && vite build && tsc -p tsconfig.build.json",
+        "format": "prettier --write .",
+        "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+        "typecheck": "tsc --noEmit",
+        "type-check": "tsc --noEmit"
+    },
+    "peerDependencies": {
+        "@tanstack/react-query": "^5.90.12",
+        "@tanstack/react-query-devtools": "^5.91.1",
+        "react": "^19.0.1",
+        "react-dom": "^19.0.1",
+        "react-router-dom": "^7.6.1"
+    },
+    "dependencies": {
+        "@better-auth/passkey": "^1.4.18",
+        "@better-auth/stripe": "^1.4.18",
+        "@radix-ui/react-alert-dialog": "^1.1.15",
+        "@radix-ui/react-avatar": "^1.1.11",
+        "@radix-ui/react-dialog": "^1.1.14",
+        "@radix-ui/react-dropdown-menu": "^2.1.16",
+        "@radix-ui/react-label": "^2.1.6",
+        "@radix-ui/react-scroll-area": "^1.2.10",
+        "@radix-ui/react-select": "^2.2.6",
+        "@radix-ui/react-slot": "^1.2.2",
+        "@radix-ui/react-tabs": "^1.1.12",
+        "better-auth": "^1.4.18",
+        "better-auth-cloudflare": "^0.2.9",
+        "class-variance-authority": "^0.7.1",
+        "clsx": "^2.1.1",
+        "input-otp": "^1.4.2",
+        "lucide-react": "^0.509.0",
+        "react-easy-crop": "^5.5.6",
+        "stripe": "^17.0.0",
+        "tailwind-merge": "^3.2.0"
+    },
+    "devDependencies": {
+        "@tanstack/eslint-plugin-query": "^5.91.2",
+        "@types/node": "^20",
+        "@types/react": "^19",
+        "@types/react-dom": "^19",
+        "@tanstack/react-query-devtools": "^5.91.1",
+        "@vitejs/plugin-react": "^4.3.4",
+        "autoprefixer": "^10.4.20",
+        "eslint": "^9.39.1",
+        "postcss": "^8.4.35",
+        "prettier": "^3.5.3",
+        "tailwindcss": "^3.4.15",
+        "tailwindcss-animate": "^1.0.7",
+        "typescript": "^5",
+        "vite": "^6.0.5"
+    }
+}

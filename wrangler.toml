@@ -1,0 +1,24 @@
+name = "my-account-app"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Custom domain (uncomment and set your domain)
+# routes = [
+#   { pattern = "account.example.com", custom_domain = true }
+# ]
+
+# Worker entry point (source file - Vite will build it)
+main = "src/worker.ts"
+
+# Static assets directory (Vite builds client assets here)
+[assets]
+binding = "ASSETS"
+directory = "dist/client"
+
+[observability]
+enabled = true
+
+[placement]
+mode = "smart"
+
+# Headless frontend - connects to your API backend for all data
