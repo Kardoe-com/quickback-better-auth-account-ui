@@ -7,7 +7,7 @@ Built with React, Vite, Tailwind CSS, and deployable to Cloudflare Workers.
 ## Quick Start
 
 ```bash
-npx degit kardoe/quickback-better-auth-account-ui my-account-app
+npx degit Kardoe-com/quickback-better-auth-account-ui my-account-app
 cd my-account-app
 npm install
 ```
