@@ -239,7 +239,7 @@ function envBool(key: string, defaultValue: boolean): boolean {
 
 // Mutable config that can be updated at runtime via setAppConfig()
 export let appConfig: AppConfig = {
-  authRoute: (env('VITE_AUTH_ROUTE', 'better-auth') as AuthRouteMode),
+  authRoute: (env('VITE_AUTH_ROUTE', 'quickback') as AuthRouteMode),
   name: env('VITE_APP_NAME', "[APP_NAME]"),
   tagline: env('VITE_APP_TAGLINE', '[APP_TAGLINE]'),
   description: env('VITE_APP_DESCRIPTION', '[APP_DESCRIPTION]'),
