@@ -192,7 +192,7 @@ export function OrgLogoUploadDialog({ isOpen, onClose, currentLogo, organization
 
         try {
             const { error: updateError } = await authClient.organization.update({
-                data: { logo: null },
+                data: { logo: undefined },
             });
 
             if (updateError) {

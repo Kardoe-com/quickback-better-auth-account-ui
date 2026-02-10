@@ -164,7 +164,7 @@ export default function ManageDevicesPage() {
 
   return (
     <div className="flex-1 flex flex-col font-[family-name:var(--font-geist-sans)]">
-      <div className="max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-2xl font-semibold flex items-center gap-3">
             <Monitor className="h-6 w-6" />

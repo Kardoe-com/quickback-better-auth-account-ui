@@ -11,7 +11,7 @@
             "types": "./dist/index.d.ts",
             "import": "./dist/index.js"
         },
-        "./styles.css": "./dist/auth-ui.css",
+        "./styles.css": "./dist/quickback-better-auth-account-ui.css",
         "./worker": {
             "types": "./dist/worker.d.ts",
             "import": "./dist/worker.js"

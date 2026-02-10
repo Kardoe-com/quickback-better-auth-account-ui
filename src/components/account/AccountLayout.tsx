@@ -63,7 +63,7 @@ export function AccountLayout({
   if (variant === "sidebar" && sidebar) {
     return (
       <div className={`min-h-screen ${className}`}>
-        <div className={`container mx-auto px-4 sm:px-6 lg:px-8 py-8`}>
+        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8`}>
           <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
             {/* Sidebar */}
             <aside className="w-full lg:w-[300px] order-2 lg:order-1">
@@ -84,7 +84,7 @@ export function AccountLayout({
   // Default variant
   return (
     <div className={`min-h-screen ${className}`}>
-      <div className={`container mx-auto px-4 sm:px-6 lg:px-8 py-8`}>
+      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8`}>
         {header && <div className="mb-6">{header}</div>}
         <div className={maxWidthClass}>
           {children}

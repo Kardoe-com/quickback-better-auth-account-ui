@@ -18,6 +18,7 @@ import { DeleteSubscriptionDialog } from '@/app/(authenticated)/admin/components
 import { User, Subscription } from '@/app/(authenticated)/admin/types';
 import { Users, UserPlus, Shield, AlertTriangle, CreditCard, Crown, Plus } from 'lucide-react';
 import { isStripeConfiguredClient } from '@/lib/stripe';
+import { isFeatureEnabled } from '@/config/app';
 
 export default function AdminPage() {
   const { data: session, isPending } = authClient.useSession();
@@ -204,10 +205,12 @@ export default function AdminPage() {
               <Users className="h-4 w-4" />
               Users
             </TabsTrigger>
-            <TabsTrigger value="subscriptions" className="gap-2">
-              <Crown className="h-4 w-4" />
-              Subscriptions
-            </TabsTrigger>
+            {isFeatureEnabled('subscriptions') && (
+              <TabsTrigger value="subscriptions" className="gap-2">
+                <Crown className="h-4 w-4" />
+                Subscriptions
+              </TabsTrigger>
+            )}
             {isStripeConfiguredClient() && (
               <TabsTrigger value="stripe" className="gap-2">
                 <CreditCard className="h-4 w-4" />
@@ -237,29 +240,31 @@ export default function AdminPage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="subscriptions" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Subscription Management</CardTitle>
-                    <CardDescription>Manage user subscriptions manually. Create, edit, or delete subscriptions without requiring Stripe.</CardDescription>
+          {isFeatureEnabled('subscriptions') && (
+            <TabsContent value="subscriptions" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle>Subscription Management</CardTitle>
+                      <CardDescription>Manage user subscriptions manually. Create, edit, or delete subscriptions without requiring Stripe.</CardDescription>
+                    </div>
+                    <Button onClick={() => setCreateSubscriptionOpen(true)}>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Create Subscription
+                    </Button>
                   </div>
-                  <Button onClick={() => setCreateSubscriptionOpen(true)}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create Subscription
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <SubscriptionList
-                  onEditSubscription={handleEditSubscription}
-                  onDeleteSubscription={handleDeleteSubscription}
-                  refreshTrigger={subscriptionRefreshTrigger}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
+                </CardHeader>
+                <CardContent>
+                  <SubscriptionList
+                    onEditSubscription={handleEditSubscription}
+                    onDeleteSubscription={handleDeleteSubscription}
+                    refreshTrigger={subscriptionRefreshTrigger}
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
 
           {isStripeConfiguredClient() && (
             <TabsContent value="stripe" className="space-y-4">

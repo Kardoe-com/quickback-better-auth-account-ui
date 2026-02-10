@@ -51,7 +51,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b bg-card shadow-sm">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* App Name */}
           <Link to={session?.user ? '/profile' : '/'} className="flex items-center space-x-2">

@@ -74,6 +74,7 @@ export function UserList({
     const [error, setError] = useState("");
     const [searchValue, setSearchValue] = useState("");
     const [searchField, setSearchField] = useState<"email" | "name">("email");
+    const [showAnonymous, setShowAnonymous] = useState(false);
     const [sortBy, setSortBy] = useState("createdAt");
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
     const [currentPage, setCurrentPage] = useState(1);
@@ -107,8 +108,15 @@ export function UserList({
             }
 
             if (data) {
-                setUsers(data.users as User[]);
-                setTotal(data.total);
+                const allUsers = data.users as User[];
+                if (!showAnonymous) {
+                    const filtered = allUsers.filter(u => !u.email?.includes('@anon.'));
+                    setUsers(filtered);
+                    setTotal(data.total - (allUsers.length - filtered.length));
+                } else {
+                    setUsers(allUsers);
+                    setTotal(data.total);
+                }
             }
         } catch (err) {
             console.error("Error fetching users:", err);
@@ -116,7 +124,7 @@ export function UserList({
         } finally {
             setIsLoading(false);
         }
-    }, [currentPage, pageSize, searchValue, searchField, sortBy, sortDirection]);
+    }, [currentPage, pageSize, searchValue, searchField, sortBy, sortDirection, showAnonymous]);
 
     useEffect(() => {
         fetchUsers();
@@ -201,8 +209,27 @@ export function UserList({
                 </form>
                 <Button variant="outline" onClick={() => fetchUsers()}>
                     <RefreshCw className="h-4 w-4" />
-                    Refresh
                 </Button>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="icon">
+                            <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Filters</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                            onSelect={(e) => e.preventDefault()}
+                            onClick={() => { setShowAnonymous(!showAnonymous); setCurrentPage(1); }}
+                        >
+                            <span className="flex items-center gap-2">
+                                {showAnonymous ? <CheckCircle className="h-4 w-4" /> : <span className="h-4 w-4" />}
+                                Show anonymous users
+                            </span>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
 
             {/* Error Message */}

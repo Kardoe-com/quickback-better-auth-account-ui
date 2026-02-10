@@ -185,6 +185,7 @@ export interface AppConfig {
     themeToggle: boolean;
     teams: boolean;
     passkeySignup: boolean;
+    subscriptions: boolean;
   };
 
   // Stripe Configuration
@@ -412,6 +413,7 @@ export let appConfig: AppConfig = {
     themeToggle: envBool('ENABLE_THEME_TOGGLE', true),
     teams: envBool('ENABLE_TEAMS', true),
     passkeySignup: envBool('ENABLE_PASSKEY_SIGNUP', true),
+    subscriptions: envBool('ENABLE_SUBSCRIPTIONS', false),
   },
 
   // Stripe Configuration

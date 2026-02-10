@@ -300,7 +300,7 @@ export default function ProfilePage() {
     <div className="flex-1 flex flex-col font-[family-name:var(--font-geist-sans)]">
       {/* Profile Header */}
       <div className="bg-background">
-        <div className="container mx-auto px-4 pt-2 pb-6 lg:pt-2 lg:pb-0">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-6 lg:pt-8 lg:pb-0">
           <div className="flex items-center gap-6">
             {/* Avatar - Clickable to open upload dialog (only if file uploads enabled) */}
             {appConfig.features.fileUploads ? (
@@ -321,6 +321,7 @@ export default function ProfilePage() {
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-3">
                 <h1 className="text-2xl font-semibold break-words">{session.user?.name || appConfig.messages.userFallback || 'User'}</h1>
+                {(session.user as any)?.role === 'admin' && <Link to="/admin"><Badge className="cursor-pointer hover:bg-primary/80">Admin</Badge></Link>}
               </div>
               <p className="text-muted-foreground truncate">{session.user?.email || appConfig.messages.noEmailProvided || 'No email provided'}</p>
             </div>
@@ -330,7 +331,7 @@ export default function ProfilePage() {
 
       {/* Main Content Area */}
       <div className="flex-1">
-        <div className="container mx-auto px-4 pb-4 lg:py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
           {/* Actions Section - All screen sizes: Row of buttons with More menu */}
           <div ref={buttonsContainerRef} className="flex mb-6 pb-1 border-b flex-wrap gap-2">
             {/* Change Avatar - Only visible if file uploads enabled */}
