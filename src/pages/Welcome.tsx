@@ -157,8 +157,13 @@ export default function WelcomePage() {
         // Prefetch session to update header immediately
         await authClient.getSession();
 
-        // Since this is the welcome page, always redirect to passkey setup
-        navigate('/setup-passkey');
+        // Check if user already has a passkey (e.g. from passkey signup flow)
+        const userPasskeys = await authClient.passkey.listUserPasskeys().catch(() => ({ data: [] }));
+        if (userPasskeys.data && userPasskeys.data.length > 0) {
+          navigate(appConfig.routes.authenticated.dashboard);
+        } else {
+          navigate('/setup-passkey');
+        }
       }
     } catch (error) {
       setAlertDialog({

@@ -6,10 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { appConfig } from '@/config/app';
+import { appConfig, isFeatureEnabled } from '@/config/app';
 import { getAuthApiUrl } from '@/config/runtime';
 import { sanitizeCallbackUrl } from '@/utils/url-validation';
-import { Fingerprint, Mail } from 'lucide-react';
+import { Fingerprint, Mail, Info, CheckCircle2 } from 'lucide-react';
 
 export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -19,6 +19,10 @@ export default function SignUpPage() {
   const [supportsWebAuthn, setSupportsWebAuthn] = useState(false);
   const [emailConfigured, setEmailConfigured] = useState(true);
   const [searchParams] = useSearchParams();
+  const [passkeyStep, setPasskeyStep] = useState<'initial' | 'email-collection'>('initial');
+  const [passkeyEmail, setPasskeyEmail] = useState('');
+  const [passkeyName, setPasskeyName] = useState('');
+  const [isUpgrading, setIsUpgrading] = useState(false);
 
   useEffect(() => {
     setSupportsWebAuthn(typeof window !== 'undefined' && !!window.PublicKeyCredential);
@@ -104,25 +108,8 @@ export default function SignUpPage() {
         return;
       }
 
-      const upgradeResponse = await fetch(getAuthApiUrl('/upgrade-anonymous'), {
-        method: 'POST',
-        credentials: 'include',
-      });
-
-      if (!upgradeResponse.ok) {
-        setAlertDialog({
-          open: true,
-          title: 'Account Upgrade Failed',
-          description: "Your passkey was created, but we couldn't finish setup. Please try again.",
-        });
-        return;
-      }
-
-      await authClient.getSession({ query: { disableCookieCache: true } });
-      const storedCallback = sessionStorage.getItem('loginCallback');
-      const callbackURL = sanitizeCallbackUrl(storedCallback, appConfig.routes.authenticated.dashboard);
-      sessionStorage.removeItem('loginCallback');
-      navigate(callbackURL);
+      setIsPasskeyLoading(false);
+      setPasskeyStep('email-collection');
     } catch (error) {
       setAlertDialog({
         open: true,
@@ -131,6 +118,72 @@ export default function SignUpPage() {
       });
     } finally {
       setIsPasskeyLoading(false);
+    }
+  };
+
+  const handlePasskeyUpgrade = async (skip: boolean) => {
+    setIsUpgrading(true);
+    try {
+      const body: Record<string, string> = {};
+      if (!skip && passkeyEmail) {
+        body.email = passkeyEmail;
+      }
+      if (!skip && passkeyName) {
+        body.name = passkeyName;
+      }
+
+      const upgradeResponse = await fetch(getAuthApiUrl('/upgrade-anonymous'), {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.keys(body).length > 0 ? body : undefined),
+      });
+
+      if (!upgradeResponse.ok) {
+        const errorData = await upgradeResponse.json().catch(() => ({}));
+        setAlertDialog({
+          open: true,
+          title: 'Account Upgrade Failed',
+          description: errorData?.message || "Your passkey was created, but we couldn't finish setup. Please try again.",
+        });
+        return;
+      }
+
+      const data = await upgradeResponse.json();
+
+      await authClient.getSession({ query: { disableCookieCache: true } });
+
+      if (data.verificationRequired && passkeyEmail) {
+        // Send verification OTP in the background
+        const welcomeData = {
+          email: passkeyEmail,
+          fromSignup: true,
+        };
+        const encodedData = btoa(JSON.stringify(welcomeData));
+        navigate(`/welcome?data=${encodedData}`);
+
+        authClient.emailOtp
+          .sendVerificationOtp({
+            email: passkeyEmail,
+            type: 'sign-in',
+          })
+          .catch((error: unknown) => {
+            console.error('Failed to send verification email:', error);
+          });
+      } else {
+        const storedCallback = sessionStorage.getItem('loginCallback');
+        const callbackURL = sanitizeCallbackUrl(storedCallback, appConfig.routes.authenticated.dashboard);
+        sessionStorage.removeItem('loginCallback');
+        navigate(callbackURL);
+      }
+    } catch (error) {
+      setAlertDialog({
+        open: true,
+        title: 'Error',
+        description: 'An unexpected error occurred. Please try again.',
+      });
+    } finally {
+      setIsUpgrading(false);
     }
   };
 
@@ -197,13 +250,93 @@ export default function SignUpPage() {
     }
   };
 
+  const showPasskeySignup = isFeatureEnabled('passkeySignup') && supportsWebAuthn;
+  const showEmailSignup = emailConfigured;
+
+  if (passkeyStep === 'email-collection') {
+    return (
+      <div className="flex flex-col gap-6 w-full max-w-[450px]">
+        <Card className="w-full">
+          <CardHeader>
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <CheckCircle2 className="h-5 w-5 text-green-600" />
+              <span className="text-sm font-medium text-green-600">Your passkey has been set up successfully</span>
+            </div>
+            <CardTitle className="text-2xl text-center">Almost There</CardTitle>
+            <CardDescription className="text-center">Add your email to secure your account</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="passkey-name">Full Name</Label>
+                <Input
+                  id="passkey-name"
+                  type="text"
+                  placeholder="Enter your full name"
+                  autoComplete="name"
+                  value={passkeyName}
+                  onChange={(e) => setPasskeyName(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="passkey-email">Email Address</Label>
+                <Input
+                  id="passkey-email"
+                  type="email"
+                  placeholder="Enter your email"
+                  autoComplete="email"
+                  value={passkeyEmail}
+                  onChange={(e) => setPasskeyEmail(e.target.value)}
+                />
+              </div>
+
+              <Button
+                onClick={() => handlePasskeyUpgrade(false)}
+                className="w-full"
+                disabled={isUpgrading}
+              >
+                {isUpgrading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    <span>Finishing setup...</span>
+                  </div>
+                ) : (
+                  'Continue'
+                )}
+              </Button>
+
+              <Button
+                onClick={() => handlePasskeyUpgrade(true)}
+                className="w-full"
+                variant="ghost"
+                disabled={isUpgrading}
+              >
+                Skip for now
+              </Button>
+
+              <p className="text-xs text-center text-muted-foreground">
+                You can add your email later in account settings
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <AlertDialog open={alertDialog.open} onOpenChange={(open) => setAlertDialog({ ...alertDialog, open })}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{alertDialog.title}</AlertDialogTitle>
+              <AlertDialogDescription>{alertDialog.description}</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogAction onClick={() => setAlertDialog({ ...alertDialog, open: false })}>OK</AlertDialogAction>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-6 w-full max-w-[450px]">
-      {!emailConfigured && (
-        <div className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          Email delivery is not configured yet. Sign-up and login emails may fail to send.
-        </div>
-      )}
       <Card className="w-full">
         <CardHeader>
           <CardTitle className="text-2xl text-center">Create Account</CardTitle>
@@ -211,69 +344,95 @@ export default function SignUpPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <Button
-              onClick={handlePasskeySignup}
-              className="w-full"
-              variant="outline"
-              disabled={isPasskeyLoading || !supportsWebAuthn}
-              title={!supportsWebAuthn ? "Your browser doesn't support passkeys" : ''}
-            >
-              {isPasskeyLoading ? (
-                <div className="flex items-center justify-center gap-2">
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                  <span>Creating passkey...</span>
+            {showPasskeySignup && (
+              <Button
+                onClick={handlePasskeySignup}
+                className="w-full"
+                variant="outline"
+                disabled={isPasskeyLoading}
+              >
+                {isPasskeyLoading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    <span>Creating passkey...</span>
+                  </div>
+                ) : (
+                  <>
+                    <Fingerprint className="mr-2 h-4 w-4" />
+                    Create Account with Passkey
+                  </>
+                )}
+              </Button>
+            )}
+
+            {showPasskeySignup && showEmailSignup && (
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
                 </div>
-              ) : (
-                <>
-                  <Fingerprint className="mr-2 h-4 w-4" />
-                  Create Account with Passkey
-                </>
-              )}
-            </Button>
-
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Enter your full name"
-                autoComplete="name"
-                value={signupForm.name}
-                onChange={(e) => setSignupForm({ ...signupForm, name: e.target.value })}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                autoComplete="email"
-                value={signupForm.email}
-                onChange={(e) => setSignupForm({ ...signupForm, email: e.target.value })}
-                required
-              />
-            </div>
-
-            <Button onClick={handleSignup} className="w-full" disabled={isLoading || !signupForm.email || !signupForm.name}>
-              {isLoading ? (
-                <div className="flex items-center justify-center gap-2">
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                  <span>Creating account...</span>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-card px-2 text-muted-foreground">Or</span>
                 </div>
-              ) : (
-                <>
-                  <Mail className="mr-2 h-4 w-4" />
-                  Create Account
-                </>
-              )}
-            </Button>
+              </div>
+            )}
 
-            <p className="text-xs text-center text-muted-foreground">
-              We'll send you a welcome email with a secure link to access your account
-            </p>
+            {showEmailSignup ? (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="name">Full Name</Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="Enter your full name"
+                    autoComplete="name"
+                    value={signupForm.name}
+                    onChange={(e) => setSignupForm({ ...signupForm, name: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    autoComplete="email"
+                    value={signupForm.email}
+                    onChange={(e) => setSignupForm({ ...signupForm, email: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <Button onClick={handleSignup} className="w-full" disabled={isLoading || !signupForm.email || !signupForm.name}>
+                  {isLoading ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      <span>Creating account...</span>
+                    </div>
+                  ) : (
+                    <>
+                      <Mail className="mr-2 h-4 w-4" />
+                      Create Account
+                    </>
+                  )}
+                </Button>
+
+                <p className="text-xs text-center text-muted-foreground">
+                  We'll send you a welcome email with a secure link to access your account
+                </p>
+              </>
+            ) : showPasskeySignup ? (
+              <div className="rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950 px-4 py-3 text-sm text-blue-900 dark:text-blue-200 flex items-start gap-2">
+                <Info className="h-4 w-4 mt-0.5 shrink-0" />
+                <span>Create your account instantly with a passkey. Email signup will be available once email delivery is configured.</span>
+              </div>
+            ) : (
+              <div className="rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950 px-4 py-3 text-sm text-amber-900 dark:text-amber-200 flex items-start gap-2">
+                <Info className="h-4 w-4 mt-0.5 shrink-0" />
+                <span>Signup is currently unavailable. Please contact an administrator.</span>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

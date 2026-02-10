@@ -184,6 +184,7 @@ export interface AppConfig {
     fileUploads: boolean;
     themeToggle: boolean;
     teams: boolean;
+    passkeySignup: boolean;
   };
 
   // Stripe Configuration
@@ -410,6 +411,7 @@ export let appConfig: AppConfig = {
     fileUploads: envBool('VITE_ENABLE_FILE_UPLOADS', false),
     themeToggle: envBool('ENABLE_THEME_TOGGLE', true),
     teams: envBool('ENABLE_TEAMS', true),
+    passkeySignup: envBool('ENABLE_PASSKEY_SIGNUP', true),
   },
 
   // Stripe Configuration
