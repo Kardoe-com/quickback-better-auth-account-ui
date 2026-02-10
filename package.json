@@ -1,11 +1,31 @@
 {
     "name": "quickback-better-auth-account-ui",
     "version": "0.1.0",
-    "private": true,
+    "private": false,
     "type": "module",
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+        },
+        "./styles.css": "./dist/auth-ui.css",
+        "./worker": {
+            "types": "./dist/worker.d.ts",
+            "import": "./dist/worker.js"
+        }
+    },
+    "files": [
+        "dist"
+    ],
     "scripts": {
         "clean": "rm -rf dist",
-        "build": "pnpm typecheck && vite build && tsc -p tsconfig.build.json",
+        "dev": "vite",
+        "build": "vite build",
+        "build:lib": "vite build --config vite.lib.config.ts && tsc -p tsconfig.build.json",
+        "prepublishOnly": "npm run build:lib",
         "format": "prettier --write .",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
         "typecheck": "tsc --noEmit",

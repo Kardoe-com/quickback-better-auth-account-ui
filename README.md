@@ -4,12 +4,52 @@ A ready-to-deploy account management frontend for any [Better Auth](https://www.
 
 Built with React, Vite, Tailwind CSS, and deployable to Cloudflare Workers.
 
-## Quick Start
+## Quick Start (Standalone)
+
+Clone the repo and own the source — edit anything you want:
 
 ```bash
 npx degit Kardoe-com/quickback-better-auth-account-ui my-account-app
 cd my-account-app
 npm install
+npm run dev
+```
+
+## Library Usage
+
+Install as a dependency and get updates via `npm update`:
+
+```bash
+npm install quickback-better-auth-account-ui
+```
+
+```tsx
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import { AuthApp, setAppConfig } from 'quickback-better-auth-account-ui';
+import 'quickback-better-auth-account-ui/styles.css';
+
+setAppConfig({
+  authRoute: 'quickback',
+  name: 'My App',
+  companyName: 'My Company',
+  tagline: 'My tagline',
+});
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <AuthApp />
+    </BrowserRouter>
+  </React.StrictMode>
+);
+```
+
+The Cloudflare Worker entry is also available:
+
+```ts
+export { default } from 'quickback-better-auth-account-ui/worker';
 ```
 
 ## Configure
@@ -34,11 +74,11 @@ VITE_STRIPE_PUBLISHABLE_KEY=
 ## Develop
 
 ```bash
-npm run build    # Typecheck + Vite build
+npm run dev        # Vite dev server
+npm run build      # SPA build → dist/client/
+npm run build:lib  # Library build → dist/ (for npm publishing)
 npm run typecheck
 ```
-
-For local development, use `wrangler dev` or configure Vite's dev server.
 
 ## Deploy to Cloudflare
 
