@@ -4,9 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Settings, Loader2, Check, AlertTriangle, Trash2 } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Settings, Loader2, Check, AlertTriangle, Trash2, Camera } from 'lucide-react';
 import authClient from '@/auth/authClient';
 import { DeleteOrganizationDialog } from './components/DeleteOrganizationDialog';
+import { OrgLogoUploadDialog } from '@/components/organizations/OrgLogoUploadDialog';
 
 interface OrganizationContext {
   organization: any;
@@ -19,26 +21,21 @@ export default function OrganizationSettings() {
   const { organization, member, isOwnerOrAdmin, refreshOrganization } = useOutletContext<OrganizationContext>();
 
   const [name, setName] = useState(organization?.name || '');
-  const [slug, setSlug] = useState(organization?.slug || '');
-  const [logo, setLogo] = useState(organization?.logo || '');
 
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateError, setUpdateError] = useState('');
   const [updateSuccess, setUpdateSuccess] = useState(false);
 
-
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [logoDialogOpen, setLogoDialogOpen] = useState(false);
 
   const isOwner = member?.role === 'owner';
-  const hasChanges = name !== organization?.name || logo !== (organization?.logo || '');
+  const hasChanges = name !== organization?.name;
 
   // Reset form when organization changes
   useEffect(() => {
     setName(organization?.name || '');
-    setSlug(organization?.slug || '');
-    setLogo(organization?.logo || '');
   }, [organization]);
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,7 +49,6 @@ export default function OrganizationSettings() {
       const { error } = await authClient.organization.update({
         data: {
           name: name !== organization?.name ? name : undefined,
-          logo: logo !== (organization?.logo || '') ? (logo || null) : undefined,
         },
       });
 
@@ -71,6 +67,19 @@ export default function OrganizationSettings() {
     } finally {
       setIsUpdating(false);
     }
+  };
+
+  const getOrgInitials = (orgName: string) => {
+    return orgName
+      .split(' ')
+      .map((word) => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const handleLogoSuccess = () => {
+    refreshOrganization?.();
   };
 
   if (!isOwnerOrAdmin) {
@@ -96,6 +105,40 @@ export default function OrganizationSettings() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
+              <Label>Logo</Label>
+              <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  onClick={() => setLogoDialogOpen(true)}
+                  className="relative group cursor-pointer"
+                >
+                  <Avatar className="h-16 w-16">
+                    <AvatarImage src={organization?.logo || undefined} />
+                    <AvatarFallback className="bg-primary text-primary-foreground text-xl">
+                      {getOrgInitials(organization?.name || '')}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Camera className="h-5 w-5 text-white" />
+                  </div>
+                </button>
+                <div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setLogoDialogOpen(true)}
+                  >
+                    {organization?.logo ? 'Change Logo' : 'Upload Logo'}
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Click to upload or change your organization logo
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="org-name">Organization Name</Label>
               <Input
                 id="org-name"
@@ -104,37 +147,6 @@ export default function OrganizationSettings() {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="My Organization"
               />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="org-slug">Slug</Label>
-              <div className="flex items-center gap-2">
-                <span className="text-muted-foreground">/</span>
-                <Input
-                  id="org-slug"
-                  type="text"
-                  value={slug}
-                  disabled={true}
-                  className="bg-muted"
-                />
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Organization slug cannot be changed
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="org-logo">Logo URL (optional)</Label>
-              <Input
-                id="org-logo"
-                type="url"
-                value={logo}
-                onChange={(e) => setLogo(e.target.value)}
-                placeholder="https://example.com/logo.png"
-              />
-              <p className="text-xs text-muted-foreground">
-                Enter a URL to an image for your organization's logo
-              </p>
             </div>
 
             <div className="space-y-2">
@@ -204,6 +216,14 @@ export default function OrganizationSettings() {
           </CardContent>
         </Card>
       )}
+
+      <OrgLogoUploadDialog
+        isOpen={logoDialogOpen}
+        onClose={() => setLogoDialogOpen(false)}
+        currentLogo={organization?.logo}
+        organizationId={organization.id}
+        onSuccess={handleLogoSuccess}
+      />
 
       <DeleteOrganizationDialog
         organizationId={organization.id}

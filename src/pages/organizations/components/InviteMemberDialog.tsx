@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -18,7 +18,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import authClient from '@/auth/authClient';
-import { UserPlus } from 'lucide-react';
+import { getAuthApiUrl } from '@/config/runtime';
+import { UserPlus, Info } from 'lucide-react';
 
 interface InviteMemberDialogProps {
   organizationId: string;
@@ -42,6 +43,22 @@ export function InviteMemberDialog({
   const [role, setRole] = useState('member');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [emailConfigured, setEmailConfigured] = useState(true);
+
+  useEffect(() => {
+    if (open) {
+      fetch(getAuthApiUrl('/ses/status'), { credentials: 'include' })
+        .then((res) => res.json())
+        .then((data) => {
+          if (typeof data?.emailConfigured === 'boolean') {
+            setEmailConfigured(data.emailConfigured);
+          }
+        })
+        .catch(() => {
+          // Assume configured if we can't check
+        });
+    }
+  }, [open]);
 
   const resetForm = () => {
     setEmail('');
@@ -95,11 +112,19 @@ export function InviteMemberDialog({
             Invite Member
           </DialogTitle>
           <DialogDescription>
-            Send an invitation to join this organization. They will receive an email with instructions.
+            {emailConfigured
+              ? 'Send an invitation to join this organization. They will receive an email with instructions.'
+              : 'Create an invitation to join this organization. You can share the invitation link manually.'}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
+            {!emailConfigured && (
+              <div className="flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">
+                <Info className="h-4 w-4 mt-0.5 shrink-0" />
+                <span>Email delivery is not configured. The invitation will be created but no email will be sent. You can share the invitation link manually.</span>
+              </div>
+            )}
             <div className="grid gap-2">
               <Label htmlFor="invite-email">Email address</Label>
               <Input

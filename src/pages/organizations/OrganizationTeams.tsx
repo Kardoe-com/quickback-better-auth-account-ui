@@ -67,6 +67,11 @@ export default function OrganizationTeams() {
       });
 
       if (fetchError) {
+        // If teams aren't available server-side, treat as empty
+        if (fetchError.status === 404 || fetchError.message?.includes('not found')) {
+          setTeams([]);
+          return;
+        }
         setError(fetchError.message || 'Failed to load teams');
         return;
       }

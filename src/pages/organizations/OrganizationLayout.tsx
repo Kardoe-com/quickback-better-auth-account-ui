@@ -3,8 +3,7 @@ import { useNavigate, useParams, useLocation, Link, Outlet } from 'react-router-
 import authClient from '@/auth/authClient';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, LayoutDashboard, Users, Mail, Settings, UsersRound, Key, Crown } from 'lucide-react';
+import { LayoutDashboard, Users, Mail, Settings, UsersRound, Key, Crown } from 'lucide-react';
 import { appConfig, isFeatureEnabled } from '@/config/app';
 import { getOrganizationSubscription } from '@/lib/subscriptions';
 import { Subscription } from '@/app/(authenticated)/admin/types';
@@ -120,14 +119,6 @@ export default function OrganizationLayout() {
       {/* Organization Header */}
       <div className="bg-background border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          {/* Back Link */}
-          <Button variant="ghost" asChild className="mb-4 -ml-2 h-8">
-            <Link to="/organizations">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              All Organizations
-            </Link>
-          </Button>
-
           {/* Org Info */}
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">

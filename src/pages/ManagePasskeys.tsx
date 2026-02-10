@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import authClient from '@/auth/authClient';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { ArrowLeft, Fingerprint, Trash2, Plus, Smartphone, Laptop, Key } from 'lucide-react';
+import { Fingerprint, Trash2, Plus, Smartphone, Laptop, Key } from 'lucide-react';
 import { appConfig } from '@/config/app';
 
 interface Passkey {
@@ -129,12 +129,6 @@ export default function ManagePasskeysPage() {
     <div className="flex-1 flex flex-col font-[family-name:var(--font-geist-sans)]">
       <div className="max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <Button variant="ghost" asChild className="mb-4 -ml-2">
-            <Link to="/profile">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Profile
-            </Link>
-          </Button>
           <h1 className="text-2xl font-semibold flex items-center gap-3">
             <Fingerprint className="h-6 w-6" />
             Manage Passkeys
