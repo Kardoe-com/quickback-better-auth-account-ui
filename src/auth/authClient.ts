@@ -42,22 +42,6 @@ function _createClient() {
     });
 }
 
-type AuthClient = ReturnType<typeof _createClient>;
-let _client: AuthClient | null = null;
-
-function initClient(): AuthClient {
-    if (!_client) {
-        _client = _createClient();
-    }
-    return _client;
-}
-
-const client = new Proxy({} as AuthClient, {
-    get(_, prop) {
-        const real = initClient();
-        const value = Reflect.get(real, prop, real);
-        return typeof value === 'function' ? value.bind(real) : value;
-    },
-});
+const client = _createClient();
 
 export default client;
