@@ -385,7 +385,7 @@ export let appConfig: AppConfig = {
       users: '/admin',
     },
     api: (() => {
-      const mode = env('VITE_AUTH_ROUTE', 'better-auth');
+      const mode = env('VITE_AUTH_ROUTE', 'quickback');
       if (mode === 'quickback' || mode === 'better-auth') {
         return AUTH_ROUTE_PRESETS[mode];
       }
