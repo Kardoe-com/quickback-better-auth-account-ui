@@ -6,6 +6,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { isAnonymousEmail } from "@/lib/utils";
 
 export interface AccountHeaderProps {
   /** User name */
@@ -66,9 +67,11 @@ export function AccountHeader({
                 </Badge>
               )}
             </div>
-            <p className="text-muted-foreground truncate">
-              {email || "No email provided"}
-            </p>
+            {!isAnonymousEmail(email) && (
+              <p className="text-muted-foreground truncate">
+                {email || "No email provided"}
+              </p>
+            )}
           </div>
         </div>
       </div>

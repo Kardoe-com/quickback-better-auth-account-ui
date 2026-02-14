@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User, LogOut, Building2, ChevronDown, Plus, Shield, CreditCard } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { isStripeConfiguredClient } from '@/lib/stripe';
+import { isAnonymousEmail } from '@/lib/utils';
 import { appConfig } from '@/config/app';
 
 export default function Header() {
@@ -118,7 +119,9 @@ export default function Header() {
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">{session.user.name || 'User'}</p>
-                      <p className="text-xs leading-none text-muted-foreground">{session.user.email}</p>
+                      {!isAnonymousEmail(session.user.email) && (
+                        <p className="text-xs leading-none text-muted-foreground">{session.user.email}</p>
+                      )}
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />

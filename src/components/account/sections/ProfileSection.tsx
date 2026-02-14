@@ -6,6 +6,7 @@
 
 import { AccountSection } from "../AccountSection";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { isAnonymousEmail } from "@/lib/utils";
 
 export interface ProfileSectionProps {
   /** User name */
@@ -70,7 +71,9 @@ export function ProfileSection({
           <div className="flex items-center gap-2 mb-1">
             <h3 className="text-lg font-semibold">{name || "User"}</h3>
           </div>
-          <p className="text-sm text-muted-foreground">{email || "No email provided"}</p>
+          {!isAnonymousEmail(email) && (
+            <p className="text-sm text-muted-foreground">{email || "No email provided"}</p>
+          )}
         </div>
       </div>
     </AccountSection>

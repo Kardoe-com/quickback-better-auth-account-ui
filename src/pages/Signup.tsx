@@ -108,8 +108,22 @@ export default function SignUpPage() {
         return;
       }
 
+      // Server-side hook auto-upgrades anonymous → real user on passkey registration.
+      // Refetch session to get the updated user state.
+      await authClient.getSession({ query: { disableCookieCache: true } });
+
       setIsPasskeyLoading(false);
-      setPasskeyStep('email-collection');
+
+      // If email is configured, offer optional email collection
+      if (emailConfigured) {
+        setPasskeyStep('email-collection');
+      } else {
+        // No email configured — go straight to dashboard
+        const storedCallback = sessionStorage.getItem('loginCallback');
+        const callbackURL = sanitizeCallbackUrl(storedCallback, appConfig.routes.authenticated.dashboard);
+        sessionStorage.removeItem('loginCallback');
+        navigate(callbackURL);
+      }
     } catch (error) {
       setAlertDialog({
         open: true,
@@ -124,58 +138,51 @@ export default function SignUpPage() {
   const handlePasskeyUpgrade = async (skip: boolean) => {
     setIsUpgrading(true);
     try {
-      const body: Record<string, string> = {};
-      if (!skip && passkeyEmail) {
-        body.email = passkeyEmail;
-      }
-      if (!skip && passkeyName) {
-        body.name = passkeyName;
-      }
+      // User is already upgraded server-side (passkey hook).
+      // This step optionally attaches email/name to the account.
+      if (!skip && (passkeyEmail || passkeyName)) {
+        const body: Record<string, string> = {};
+        if (passkeyEmail) body.email = passkeyEmail;
+        if (passkeyName) body.name = passkeyName;
 
-      const upgradeResponse = await fetch(getAuthApiUrl('/upgrade-anonymous'), {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(Object.keys(body).length > 0 ? body : undefined),
-      });
-
-      if (!upgradeResponse.ok) {
-        const errorData = await upgradeResponse.json().catch(() => ({}));
-        setAlertDialog({
-          open: true,
-          title: 'Account Upgrade Failed',
-          description: errorData?.message || "Your passkey was created, but we couldn't finish setup. Please try again.",
+        const upgradeResponse = await fetch(getAuthApiUrl('/upgrade-anonymous'), {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
         });
-        return;
-      }
 
-      const data = await upgradeResponse.json();
-
-      await authClient.getSession({ query: { disableCookieCache: true } });
-
-      if (data.verificationRequired && passkeyEmail) {
-        // Send verification OTP in the background
-        const welcomeData = {
-          email: passkeyEmail,
-          fromSignup: true,
-        };
-        const encodedData = btoa(JSON.stringify(welcomeData));
-        navigate(`/welcome?data=${encodedData}`);
-
-        authClient.emailOtp
-          .sendVerificationOtp({
-            email: passkeyEmail,
-            type: 'sign-in',
-          })
-          .catch((error: unknown) => {
-            console.error('Failed to send verification email:', error);
+        if (!upgradeResponse.ok) {
+          const errorData = await upgradeResponse.json().catch(() => ({}));
+          setAlertDialog({
+            open: true,
+            title: 'Failed to Save Details',
+            description: errorData?.message || "Your passkey was created, but we couldn't save your details. You can update them later in settings.",
           });
-      } else {
-        const storedCallback = sessionStorage.getItem('loginCallback');
-        const callbackURL = sanitizeCallbackUrl(storedCallback, appConfig.routes.authenticated.dashboard);
-        sessionStorage.removeItem('loginCallback');
-        navigate(callbackURL);
+          // Don't block — passkey is already set up, user is already upgraded
+        } else {
+          const data = await upgradeResponse.json();
+          await authClient.getSession({ query: { disableCookieCache: true } });
+
+          if (data.verificationRequired && passkeyEmail) {
+            const welcomeData = { email: passkeyEmail, fromSignup: true };
+            const encodedData = btoa(JSON.stringify(welcomeData));
+            navigate(`/welcome?data=${encodedData}`);
+
+            authClient.emailOtp
+              .sendVerificationOtp({ email: passkeyEmail, type: 'sign-in' })
+              .catch((error: unknown) => {
+                console.error('Failed to send verification email:', error);
+              });
+            return;
+          }
+        }
       }
+
+      const storedCallback = sessionStorage.getItem('loginCallback');
+      const callbackURL = sanitizeCallbackUrl(storedCallback, appConfig.routes.authenticated.dashboard);
+      sessionStorage.removeItem('loginCallback');
+      navigate(callbackURL);
     } catch (error) {
       setAlertDialog({
         open: true,
