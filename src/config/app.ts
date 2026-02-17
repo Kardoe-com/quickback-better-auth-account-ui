@@ -185,6 +185,8 @@ export interface AppConfig {
     themeToggle: boolean;
     teams: boolean;
     passkeySignup: boolean;
+    /** Dev-only: enable email+password signup and login (bypasses OTP/magic link) */
+    passwordAuth: boolean;
     subscriptions: boolean;
   };
 
@@ -413,6 +415,7 @@ export let appConfig: AppConfig = {
     themeToggle: envBool('ENABLE_THEME_TOGGLE', true),
     teams: envBool('ENABLE_TEAMS', true),
     passkeySignup: envBool('ENABLE_PASSKEY_SIGNUP', true),
+    passwordAuth: envBool('ENABLE_PASSWORD_AUTH', false),
     subscriptions: envBool('ENABLE_SUBSCRIPTIONS', false),
   },
 

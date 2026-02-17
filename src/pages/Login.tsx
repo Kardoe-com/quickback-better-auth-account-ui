@@ -7,20 +7,23 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { appConfig } from '@/config/app';
+import { appConfig, isFeatureEnabled } from '@/config/app';
 import { getAuthApiUrl } from '@/config/runtime';
 import { sanitizeCallbackUrl } from '@/utils/url-validation';
-import { Mail, Fingerprint } from 'lucide-react';
+import { Mail, Fingerprint, KeyRound } from 'lucide-react';
 
 export default function LoginPage() {
   const [isLoadingMagicLink, setIsLoadingMagicLink] = useState(false);
   const [isPasskeyLoading, setIsPasskeyLoading] = useState(false);
   const [alertDialog, setAlertDialog] = useState({ open: false, title: '', description: '' });
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isPasswordLoading, setIsPasswordLoading] = useState(false);
   const [emailConfigured, setEmailConfigured] = useState(true);
   const [supportsWebAuthn, setSupportsWebAuthn] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const showPasswordAuth = isFeatureEnabled('passwordAuth');
 
   useEffect(() => {
     setSupportsWebAuthn(typeof window !== 'undefined' && !!window.PublicKeyCredential);
@@ -126,6 +129,46 @@ export default function LoginPage() {
     }
   };
 
+  const handlePasswordLogin = async () => {
+    if (!email || !password) {
+      setAlertDialog({
+        open: true,
+        title: 'Missing Information',
+        description: 'Please enter your email and password.',
+      });
+      return;
+    }
+
+    setIsPasswordLoading(true);
+    try {
+      const result = await authClient.signIn.email({
+        email,
+        password,
+      });
+
+      if (result.error) {
+        setAlertDialog({
+          open: true,
+          title: 'Sign-In Failed',
+          description: result.error.message || 'Invalid email or password.',
+        });
+        return;
+      }
+
+      const callback = sessionStorage.getItem('loginCallback') || appConfig.routes.authenticated.dashboard;
+      sessionStorage.removeItem('loginCallback');
+      window.location.href = callback;
+    } catch (error) {
+      setAlertDialog({
+        open: true,
+        title: 'Error',
+        description: 'An unexpected error occurred. Please try again.',
+      });
+    } finally {
+      setIsPasswordLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-6 w-full max-w-[450px]">
       {!emailConfigured && (
@@ -142,7 +185,11 @@ export default function LoginPage() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              handleSendMagicLink();
+              if (showPasswordAuth) {
+                handlePasswordLogin();
+              } else {
+                handleSendMagicLink();
+              }
             }}
             className="space-y-4"
           >
@@ -159,7 +206,41 @@ export default function LoginPage() {
               />
             </div>
 
+            {showPasswordAuth && (
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+            )}
+
             <div className="flex flex-col gap-3">
+              {showPasswordAuth ? (
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isPasswordLoading || !email || !password}
+                >
+                  {isPasswordLoading ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                      <span>Signing in...</span>
+                    </div>
+                  ) : (
+                    <>
+                      <KeyRound className="mr-2 h-4 w-4" />
+                      Sign In
+                    </>
+                  )}
+                </Button>
+              ) : (
               <Button
                 type="submit"
                 className="w-full"
@@ -178,6 +259,7 @@ export default function LoginPage() {
                   </>
                 )}
               </Button>
+              )}
 
               {supportsWebAuthn && (
                 <>

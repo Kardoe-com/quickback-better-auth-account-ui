@@ -62,7 +62,9 @@ export default function SignUpPage() {
   const [signupForm, setSignupForm] = useState({
     name: '',
     email: '',
+    password: '',
   });
+  const showPasswordAuth = isFeatureEnabled('passwordAuth');
 
   const handlePasskeySignup = async () => {
     if (!supportsWebAuthn) {
@@ -204,14 +206,24 @@ export default function SignUpPage() {
       return;
     }
 
+    if (showPasswordAuth && !signupForm.password) {
+      setAlertDialog({
+        open: true,
+        title: 'Missing Password',
+        description: 'Please enter a password.',
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
-      // Create the user account with a secure random password
-      const randomPassword = crypto.randomUUID() + crypto.randomUUID().substring(0, 8);
+      const password = showPasswordAuth
+        ? signupForm.password
+        : crypto.randomUUID() + crypto.randomUUID().substring(0, 8);
 
       const signupResult = await authClient.signUp.email({
         email: signupForm.email,
-        password: randomPassword,
+        password,
         name: signupForm.name,
       });
 
@@ -225,26 +237,28 @@ export default function SignUpPage() {
         return;
       }
 
-      // Encode email data for welcome page BEFORE async operations
-      // This prevents form from clearing during redirect
+      // Password auth: user is already signed in, redirect to app
+      if (showPasswordAuth) {
+        const callback = sessionStorage.getItem('loginCallback');
+        sessionStorage.removeItem('loginCallback');
+        window.location.href = callback || appConfig.routes.authenticated.dashboard;
+        return;
+      }
+
+      // OTP flow: redirect to welcome page and send verification email
       const welcomeData = {
         email: signupForm.email,
         fromSignup: true,
       };
       const encodedData = btoa(JSON.stringify(welcomeData));
-
-      // Redirect immediately to prevent form clearing
       navigate(`/welcome?data=${encodedData}`);
 
-      // Send welcome email in the background (don't await)
-      // This happens after redirect so user doesn't see form clearing
       authClient.emailOtp
         .sendVerificationOtp({
           email: signupForm.email,
-          type: 'sign-in', // Use sign-in type since we're not verifying email
+          type: 'sign-in',
         })
         .catch((error) => {
-          // Account was created but email failed - log but don't block
           console.error('Failed to send welcome email:', error);
         });
     } catch (error) {
@@ -411,7 +425,22 @@ export default function SignUpPage() {
                   />
                 </div>
 
-                <Button onClick={handleSignup} className="w-full" disabled={isLoading || !signupForm.email || !signupForm.name}>
+                {showPasswordAuth && (
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="Enter a password"
+                      autoComplete="new-password"
+                      value={signupForm.password}
+                      onChange={(e) => setSignupForm({ ...signupForm, password: e.target.value })}
+                      required
+                    />
+                  </div>
+                )}
+
+                <Button onClick={handleSignup} className="w-full" disabled={isLoading || !signupForm.email || !signupForm.name || (showPasswordAuth && !signupForm.password)}>
                   {isLoading ? (
                     <div className="flex items-center justify-center gap-2">
                       <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
@@ -425,9 +454,11 @@ export default function SignUpPage() {
                   )}
                 </Button>
 
-                <p className="text-xs text-center text-muted-foreground">
-                  We'll send you a welcome email with a secure link to access your account
-                </p>
+                {!showPasswordAuth && (
+                  <p className="text-xs text-center text-muted-foreground">
+                    We'll send you a welcome email with a secure link to access your account
+                  </p>
+                )}
               </>
             ) : showPasskeySignup ? (
               <div className="rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950 px-4 py-3 text-sm text-blue-900 dark:text-blue-200 flex items-start gap-2">
