@@ -1,4 +1,4 @@
-name = "my-account-app"
+name = "quickback-account"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 
