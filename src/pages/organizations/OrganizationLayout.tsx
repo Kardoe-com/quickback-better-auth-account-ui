@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate, useParams, useLocation, Link, Outlet } from 'react-router-dom';
 import authClient from '@/auth/authClient';
+import { refreshAuthToken } from '@/lib/jwt-refresh';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { LayoutDashboard, Users, Mail, Settings, UsersRound, Key, Crown } from 'lucide-react';
@@ -42,6 +43,9 @@ export default function OrganizationLayout() {
     try {
       // Set this organization as active
       await authClient.organization.setActive({ organizationSlug: slug });
+
+      // Refresh JWT with new org context
+      await refreshAuthToken();
 
       // Get full organization details
       const result = await authClient.organization.getFullOrganization({ query: { organizationSlug: slug } });

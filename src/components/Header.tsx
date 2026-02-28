@@ -1,5 +1,6 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import authClient from '@/auth/authClient';
+import { refreshAuthToken } from '@/lib/jwt-refresh';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -17,12 +18,14 @@ export default function Header() {
   const location = useLocation();
 
   const handleSignOut = async () => {
+    localStorage.removeItem('bearer_token');
     await authClient.signOut();
     navigate('/');
   };
 
   const handleSwitchOrganization = async (slug: string) => {
     await authClient.organization.setActive({ organizationSlug: slug });
+    await refreshAuthToken();
     navigate(`/organizations/${slug}`);
   };
 

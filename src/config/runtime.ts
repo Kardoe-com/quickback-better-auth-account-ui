@@ -75,3 +75,16 @@ export function getStorageApiUrl(path: string): string {
   }
   return `${getApiBase()}${appConfig.routes.api.storage}${path}`;
 }
+
+/** Build the WebSocket URL for realtime connections */
+export function getRealtimeWsUrl(): string {
+  const base = getApiBase().replace(/^http/, 'ws');
+  const realtimePath = appConfig.routes.api.realtime || '/realtime/v1';
+  return `${base}${realtimePath}/websocket`;
+}
+
+/** Build the URL for fetching a ws-ticket */
+export function getRealtimeTicketUrl(): string {
+  const realtimePath = appConfig.routes.api.realtime || '/realtime/v1';
+  return `${getApiBase()}${realtimePath}/ws-ticket`;
+}

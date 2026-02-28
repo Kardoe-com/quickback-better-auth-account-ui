@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { QueryProvider } from '@/providers/QueryProvider';
+import { RealtimeProvider } from '@/providers/RealtimeProvider';
 import { ImpersonationBanner } from '@/components/ImpersonationBanner';
 
 // Layouts
@@ -49,6 +50,7 @@ export default function App() {
   return (
     <ThemeProvider defaultTheme="light">
       <QueryProvider>
+        <RealtimeProvider>
         <ImpersonationBanner />
         <Routes>
           {/* Home - redirects based on auth status */}
@@ -104,6 +106,7 @@ export default function App() {
             </Route>
           </Route>
         </Routes>
+        </RealtimeProvider>
       </QueryProvider>
     </ThemeProvider>
   );

@@ -167,6 +167,7 @@ export interface AppConfig {
       auth: string;
       data?: string;
       storage?: string;
+      realtime?: string;
     };
   };
 
@@ -188,6 +189,7 @@ export interface AppConfig {
     /** Dev-only: enable email+password signup and login (bypasses OTP/magic link) */
     passwordAuth: boolean;
     subscriptions: boolean;
+    realtime: boolean;
   };
 
   // Stripe Configuration
@@ -215,7 +217,7 @@ export interface AppConfig {
 }
 
 const AUTH_ROUTE_PRESETS: Record<'quickback' | 'better-auth', AppConfig['routes']['api']> = {
-  'quickback':   { auth: '/auth/v1',  data: '/api/v1', storage: '/storage/v1' },
+  'quickback':   { auth: '/auth/v1',  data: '/api/v1', storage: '/storage/v1', realtime: '/realtime/v1' },
   'better-auth': { auth: '/api/auth' },
 };
 
@@ -417,6 +419,7 @@ export let appConfig: AppConfig = {
     passkeySignup: envBool('ENABLE_PASSKEY_SIGNUP', true),
     passwordAuth: envBool('ENABLE_PASSWORD_AUTH', false),
     subscriptions: envBool('ENABLE_SUBSCRIPTIONS', false),
+    realtime: envBool('ENABLE_REALTIME', true),
   },
 
   // Stripe Configuration

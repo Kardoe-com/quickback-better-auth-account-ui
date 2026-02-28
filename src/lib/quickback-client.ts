@@ -38,15 +38,35 @@ export async function apiFetch<T>(
     options?: RequestInit
 ): Promise<T> {
     const url = getDataApiUrl(path);
+    const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        ...(options?.headers as Record<string, string>),
+    };
+
+    // Send stored JWT as Bearer token for fast auth (avoids DB lookups)
+    if (typeof window !== "undefined") {
+        const jwt = localStorage.getItem("bearer_token");
+        if (jwt && !headers["Authorization"]) {
+            headers["Authorization"] = `Bearer ${jwt}`;
+        }
+    }
 
     const res = await fetch(url, {
         ...options,
         credentials: "include",
-        headers: {
-            "Content-Type": "application/json",
-            ...options?.headers,
-        },
+        headers,
     });
+
+    // Capture refreshed JWT from response header
+    const newToken = res.headers.get("set-auth-token");
+    if (newToken && typeof window !== "undefined") {
+        localStorage.setItem("bearer_token", newToken);
+    }
+
+    // Clear JWT on auth failure — next request falls back to session cookie
+    if (res.status === 401 && typeof window !== "undefined") {
+        localStorage.removeItem("bearer_token");
+    }
 
     if (!res.ok) {
         const error = await res.json().catch(() => ({ error: res.statusText }));
