@@ -68,7 +68,8 @@ export default function OrganizationApiKeys() {
           setError(keysResult.error.message || 'Failed to load API keys');
         } else if (keysResult.data) {
           // Filter keys by current organization
-          const orgKeys = keysResult.data.filter(
+          const keysList = Array.isArray(keysResult.data) ? keysResult.data : keysResult.data.apiKeys;
+          const orgKeys = (keysList || []).filter(
             (key: any) => key.metadata?.organizationId === organization.id
           );
           setApiKeys(orgKeys);
@@ -112,7 +113,8 @@ export default function OrganizationApiKeys() {
         // Refresh the list
         const listResult = await authClient.apiKey.list();
         if (listResult.data) {
-          const orgKeys = listResult.data.filter(
+          const refreshedKeys = Array.isArray(listResult.data) ? listResult.data : listResult.data.apiKeys;
+          const orgKeys = (refreshedKeys || []).filter(
             (key: any) => key.metadata?.organizationId === organization.id
           );
           setApiKeys(orgKeys);

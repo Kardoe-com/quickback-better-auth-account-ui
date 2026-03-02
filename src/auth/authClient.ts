@@ -1,11 +1,11 @@
 import {
     organizationClient,
-    apiKeyClient,
     adminClient,
     emailOTPClient,
     jwtClient,
     anonymousClient,
 } from "better-auth/client/plugins";
+import { apiKeyClient } from "@better-auth/api-key/client";
 import { passkeyClient } from "@better-auth/passkey/client";
 import { createAuthClient } from "better-auth/react";
 import { appConfig } from "@/config/app";
