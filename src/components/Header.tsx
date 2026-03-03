@@ -4,7 +4,7 @@ import { refreshAuthToken } from '@/lib/jwt-refresh';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, LogOut, Building2, ChevronDown, Plus, Shield, CreditCard } from 'lucide-react';
+import { User, LogOut, Building2, ChevronDown, Plus, Shield, CreditCard, ExternalLink } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { isStripeConfiguredClient } from '@/lib/stripe';
 import { isAnonymousEmail } from '@/lib/utils';
@@ -62,8 +62,17 @@ export default function Header() {
             <h1 className="text-xl font-bold">{appConfig.name || 'Account'}</h1>
           </Link>
 
-          {/* User Section */}
+          {/* Right Section */}
           <div className="flex items-center space-x-2 sm:space-x-4">
+            {/* App Link */}
+            {appConfig.urls.app && (
+              <Button variant="outline" size="sm" asChild>
+                <a href={appConfig.urls.app}>
+                  Open App
+                  <ExternalLink className="ml-1.5 h-3 w-3" />
+                </a>
+              </Button>
+            )}
             {/* Organization Switcher - Only shown on organization pages */}
             {session?.user && organizations && organizations.length > 0 && (() => {
               const RESERVED_PATHS = ['/profile', '/login', '/signup', '/email-otp', '/welcome', '/forgot-password', '/account-deleted', '/accept-invitation', '/organizations', '/manage-passkeys', '/setup-passkey', '/devices', '/admin', '/cli'];
