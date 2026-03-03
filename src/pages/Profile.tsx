@@ -584,7 +584,7 @@ export default function ProfilePage() {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
                               <h3 className="font-medium truncate">{org.name}</h3>
-                              <Badge variant={getRoleBadgeVariant(org.role)}>{org.role}</Badge>
+                              {org.role && <Badge variant={getRoleBadgeVariant(org.role)}>{org.role}</Badge>}
                             </div>
                             <p className="text-sm text-muted-foreground truncate">/{org.slug}</p>
                           </div>
