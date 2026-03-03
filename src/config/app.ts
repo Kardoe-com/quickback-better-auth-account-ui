@@ -274,7 +274,7 @@ export let appConfig: AppConfig = {
       return baseUrl;
     })(),
     app: env('VITE_APP_URL', ''),
-    tenantPattern: env('VITE_TENANT_URL_PATTERN', '/organizations/{slug}'),
+    tenantPattern: env('VITE_TENANT_URL_PATTERN', '/{slug}'),
     support: env('VITE_SUPPORT_URL', ''),
     privacy: env('VITE_PRIVACY_URL', ''),
     terms: env('VITE_TERMS_URL', '')
@@ -379,10 +379,10 @@ export let appConfig: AppConfig = {
     organizations: {
       list: '/organizations',
       create: '/organizations/new',
-      detail: (slug: string) => `/organizations/${slug}`,
-      members: (slug: string) => `/organizations/${slug}/members`,
-      invitations: (slug: string) => `/organizations/${slug}/invitations`,
-      settings: (slug: string) => `/organizations/${slug}/settings`,
+      detail: (slug: string) => `/${slug}`,
+      members: (slug: string) => `/${slug}/members`,
+      invitations: (slug: string) => `/${slug}/invitations`,
+      settings: (slug: string) => `/${slug}/settings`,
       acceptInvitation: (id: string) => `/accept-invitation/${id}`,
     },
     admin: {

@@ -576,7 +576,7 @@ export default function ProfilePage() {
                   ) : (
                     <div className="space-y-2">
                       {organizations.map((org: any) => (
-                        <Link key={org.id} to={`/organizations/${org.slug}`} className="flex items-center gap-4 p-4 border rounded-lg hover:bg-accent transition-colors group">
+                        <Link key={org.id} to={`/${org.slug}`} className="flex items-center gap-4 p-4 border rounded-lg hover:bg-accent transition-colors group">
                           <Avatar className="h-10 w-10">
                             <AvatarImage src={org.logo || undefined} />
                             <AvatarFallback className="bg-primary text-primary-foreground">{getOrgInitials(org.name)}</AvatarFallback>

@@ -79,7 +79,7 @@ export default function NewOrganizationPage() {
       }
 
       // Redirect to the new organization
-      navigate(`/organizations/${slug}`);
+      navigate(`/${slug}`);
     } catch (err: any) {
       console.error('Error creating organization:', err);
       setError(err.message || 'An unexpected error occurred');
@@ -96,7 +96,7 @@ export default function NewOrganizationPage() {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 w-full">
         {/* Back Button */}
         <Button variant="ghost" asChild className="mb-6 -ml-2">
-          <Link to="/organizations">
+          <Link to="/profile">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Organizations
           </Link>
@@ -147,7 +147,7 @@ export default function NewOrganizationPage() {
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Your organization URL: {appConfig.urls.base}/organizations/{slug || 'your-slug'}
+                  Your organization URL: {appConfig.urls.base}/{slug || 'your-slug'}
                 </p>
                 {slugStatus === 'taken' && <p className="text-xs text-red-500">This slug is already taken. Please choose another.</p>}
               </div>

@@ -26,7 +26,7 @@ export default function Header() {
   const handleSwitchOrganization = async (slug: string) => {
     await authClient.organization.setActive({ organizationSlug: slug });
     await refreshAuthToken();
-    navigate(`/organizations/${slug}`);
+    navigate(`/${slug}`);
   };
 
   const getInitials = (name?: string, email?: string) => {
@@ -65,7 +65,10 @@ export default function Header() {
           {/* User Section */}
           <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Organization Switcher - Only shown on organization pages */}
-            {session?.user && organizations && organizations.length > 0 && location.pathname.startsWith('/organizations/') && (
+            {session?.user && organizations && organizations.length > 0 && (() => {
+              const RESERVED_PATHS = ['/profile', '/login', '/signup', '/email-otp', '/welcome', '/forgot-password', '/account-deleted', '/accept-invitation', '/organizations', '/manage-passkeys', '/setup-passkey', '/devices', '/admin', '/cli'];
+              return location.pathname !== '/' && !RESERVED_PATHS.some(p => location.pathname === p || location.pathname.startsWith(p + '/'));
+            })() && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="h-9 gap-1 px-2 sm:px-3">

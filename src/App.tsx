@@ -86,8 +86,8 @@ export default function App() {
               <Route path="/setup-passkey" element={<SetupPasskeyPage />} />
               <Route path="/devices" element={<ManageDevicesPage />} />
 
-              {/* Organization detail routes */}
-              <Route path="/organizations/:slug" element={<OrganizationLayout />}>
+              {/* Organization detail routes — must be last (catch-all param) */}
+              <Route path="/:slug" element={<OrganizationLayout />}>
                 <Route index element={<OrganizationOverview />} />
                 <Route path="members" element={<OrganizationMembers />} />
                 <Route path="invitations" element={<OrganizationInvitations />} />

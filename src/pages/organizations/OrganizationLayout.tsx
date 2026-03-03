@@ -67,11 +67,11 @@ export default function OrganizationLayout() {
         // Mark this slug as fetched
         fetchedSlugRef.current = slug;
       } else {
-        navigate('/organizations');
+        navigate('/profile');
       }
     } catch (error) {
       console.error('Error fetching organization:', error);
-      navigate('/organizations');
+      navigate('/profile');
     } finally {
       setIsLoading(false);
       isFetchingRef.current = false;
@@ -148,7 +148,7 @@ export default function OrganizationLayout() {
           <div className="mt-6 -mb-px">
             <nav className="flex gap-4 border-b -mb-[1px]">
               <Link
-                to={`/organizations/${slug}`}
+                to={`/${slug}`}
                 className={`flex items-center gap-2 px-3 py-2 text-sm font-medium border-b-2 transition-colors ${
                   getActiveTab() === 'overview' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
@@ -157,7 +157,7 @@ export default function OrganizationLayout() {
                 Overview
               </Link>
               <Link
-                to={`/organizations/${slug}/members`}
+                to={`/${slug}/members`}
                 className={`flex items-center gap-2 px-3 py-2 text-sm font-medium border-b-2 transition-colors ${
                   getActiveTab() === 'members' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}
@@ -167,7 +167,7 @@ export default function OrganizationLayout() {
               </Link>
               {isOwnerOrAdmin && (
                 <Link
-                  to={`/organizations/${slug}/invitations`}
+                  to={`/${slug}/invitations`}
                   className={`flex items-center gap-2 px-3 py-2 text-sm font-medium border-b-2 transition-colors ${
                     getActiveTab() === 'invitations' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'
                   }`}
@@ -178,7 +178,7 @@ export default function OrganizationLayout() {
               )}
               {isOwnerOrAdmin && isFeatureEnabled('teams') && (
                 <Link
-                  to={`/organizations/${slug}/teams`}
+                  to={`/${slug}/teams`}
                   className={`flex items-center gap-2 px-3 py-2 text-sm font-medium border-b-2 transition-colors ${
                     getActiveTab() === 'teams' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'
                   }`}
@@ -189,7 +189,7 @@ export default function OrganizationLayout() {
               )}
               {isOwnerOrAdmin && (
                 <Link
-                  to={`/organizations/${slug}/settings`}
+                  to={`/${slug}/settings`}
                   className={`flex items-center gap-2 px-3 py-2 text-sm font-medium border-b-2 transition-colors ${
                     getActiveTab() === 'settings' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'
                   }`}
@@ -199,7 +199,7 @@ export default function OrganizationLayout() {
                 </Link>
               )}
               <Link
-                to={`/organizations/${slug}/api-keys`}
+                to={`/${slug}/api-keys`}
                 className={`flex items-center gap-2 px-3 py-2 text-sm font-medium border-b-2 transition-colors ${
                   getActiveTab() === 'api-keys' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'
                 }`}

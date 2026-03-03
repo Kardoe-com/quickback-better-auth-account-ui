@@ -81,7 +81,7 @@ export default function AcceptInvitationPage() {
 
       setStatus('accepted');
       setTimeout(() => {
-        navigate(`/organizations/${invitation?.organization?.slug || ''}`);
+        navigate(`/${invitation?.organization?.slug || ''}`);
       }, 2000);
     } catch (err: any) {
       console.error('Error accepting invitation:', err);
@@ -188,7 +188,7 @@ export default function AcceptInvitationPage() {
               <h2 className="text-xl font-semibold mb-2">Invalid Invitation</h2>
               <p className="text-muted-foreground mb-6">{error || 'This invitation is not valid.'}</p>
               <Button asChild>
-                <Link to="/organizations">Go to Organizations</Link>
+                <Link to="/profile">Go to Organizations</Link>
               </Button>
             </div>
           </CardContent>
@@ -211,7 +211,7 @@ export default function AcceptInvitationPage() {
                 This invitation has expired. Please ask the organization admin to send a new invitation.
               </p>
               <Button asChild>
-                <Link to="/organizations">Go to Organizations</Link>
+                <Link to="/profile">Go to Organizations</Link>
               </Button>
             </div>
           </CardContent>
@@ -234,7 +234,7 @@ export default function AcceptInvitationPage() {
                 You&apos;re now a member of {invitation?.organization?.name}. Redirecting...
               </p>
               <Button asChild>
-                <Link to={`/organizations/${invitation?.organization?.slug}`}>Go to Organization</Link>
+                <Link to={`/${invitation?.organization?.slug}`}>Go to Organization</Link>
               </Button>
             </div>
           </CardContent>
@@ -255,7 +255,7 @@ export default function AcceptInvitationPage() {
               <h2 className="text-xl font-semibold mb-2">Invitation Declined</h2>
               <p className="text-muted-foreground mb-6">You have declined this invitation.</p>
               <Button asChild>
-                <Link to="/organizations">Go to Organizations</Link>
+                <Link to="/profile">Go to Organizations</Link>
               </Button>
             </div>
           </CardContent>
