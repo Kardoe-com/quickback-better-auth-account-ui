@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
-import { appConfig } from '@/config/app';
+import { appConfig, isFeatureEnabled } from '@/config/app';
 import { getAuthApiUrl } from '@/config/runtime';
 import { sanitizeCallbackUrl } from '@/utils/url-validation';
 
@@ -120,14 +120,16 @@ export default function EmailOTPPage() {
         setOTP(''); // Clear the OTP field on error
       } else {
         // Mark email as verified after successful OTP verification
-        try {
-          await fetch(getAuthApiUrl('/verify-email'), {
-            method: 'POST',
-            credentials: 'include',
-          });
-        } catch (verifyError) {
-          // Non-critical - log but don't block the flow
-          console.warn('Failed to mark email as verified:', verifyError);
+        if (appConfig.auth.requireEmailVerification) {
+          try {
+            await fetch(getAuthApiUrl('/verify-email'), {
+              method: 'POST',
+              credentials: 'include',
+            });
+          } catch (verifyError) {
+            // Non-critical - log but don't block the flow
+            console.warn('Failed to mark email as verified:', verifyError);
+          }
         }
 
         // Prefetch session to update header immediately

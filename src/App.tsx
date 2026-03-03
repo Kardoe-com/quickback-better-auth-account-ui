@@ -33,7 +33,7 @@ import OrganizationSettings from '@/pages/organizations/OrganizationSettings';
 
 import AdminPage from '@/pages/Admin';
 
-// Passkey pages (placeholders)
+// Passkey pages
 import ManagePasskeysPage from '@/pages/ManagePasskeys';
 import SetupPasskeyPage from '@/pages/SetupPasskey';
 

@@ -15,11 +15,16 @@ export function isValidCallbackUrl(url: string | null): boolean {
     if (parsedUrl.origin === window.location.origin) {
       return true;
     }
+
+    // Allow localhost redirects (safe — attacker can't serve on user's localhost)
+    if (parsedUrl.hostname === 'localhost' || parsedUrl.hostname === '127.0.0.1') {
+      return true;
+    }
     
     // Check against whitelist of allowed external URLs
     const allowedOrigins = [
       appConfig.urls.base,
-      // Add any other trusted domains here
+      appConfig.urls.app,
     ].filter(Boolean);
     
     return allowedOrigins.includes(parsedUrl.origin);

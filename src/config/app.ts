@@ -147,7 +147,6 @@ export interface AppConfig {
       settings: string;
       managePasskeys: string;
       manageDevices: string;
-      setupPasskey: string;
       apiKeys: string;
     };
     organizations: {
@@ -175,9 +174,12 @@ export interface AppConfig {
     organizations: boolean;
     admin: boolean;
     fileUploads: boolean;
-    passkeySignup: boolean;
-    /** Dev-only: enable email+password signup and login (bypasses OTP) */
-    passwordAuth: boolean;
+    /** Enable passkey login via WebAuthn (default: true) */
+    passkey: boolean;
+    /** Enable email OTP login and signup (default: true) */
+    emailOTP: boolean;
+    /** Enable email+password login and signup (default: false) */
+    password: boolean;
     subscriptions: boolean;
     realtime: boolean;
   };
@@ -306,9 +308,9 @@ export let appConfig: AppConfig = {
   },
   
   auth: {
-    enableSignup: true,
+    enableSignup: envBool('ENABLE_SIGNUP', true),
     disableEmailStatusCheck: envBool('DISABLE_EMAIL_STATUS_CHECK', false),
-    requireEmailVerification: true,
+    requireEmailVerification: envBool('ENABLE_EMAIL_VERIFICATION', true),
     passwordRequirements: {
       minLength: 8,
       maxLength: 64,
@@ -363,7 +365,6 @@ export let appConfig: AppConfig = {
       settings: "/settings",
       managePasskeys: "/manage-passkeys",
       manageDevices: "/devices",
-      setupPasskey: "/setup-passkey",
       apiKeys: "/api-keys",
     },
     organizations: {
@@ -396,8 +397,9 @@ export let appConfig: AppConfig = {
     organizations: envBool('ENABLE_ORGANIZATIONS', true),
     admin: envBool('ENABLE_ADMIN', true),
     fileUploads: envBool('VITE_ENABLE_FILE_UPLOADS', false),
-    passkeySignup: envBool('ENABLE_PASSKEY_SIGNUP', true),
-    passwordAuth: envBool('ENABLE_PASSWORD_AUTH', false),
+    passkey: envBool('ENABLE_PASSKEY', true),
+    emailOTP: envBool('ENABLE_EMAIL_OTP', true),
+    password: envBool('ENABLE_PASSWORD', false),
     subscriptions: envBool('ENABLE_SUBSCRIPTIONS', false),
     realtime: envBool('ENABLE_REALTIME', false),
   },

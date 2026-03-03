@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
-import { appConfig } from '@/config/app';
+import { appConfig, isFeatureEnabled } from '@/config/app';
 import { getAuthApiUrl } from '@/config/runtime';
 import { sanitizeCallbackUrl } from '@/utils/url-validation';
 
@@ -144,26 +144,34 @@ export default function WelcomePage() {
         });
       } else {
         // Mark email as verified after successful OTP verification
-        try {
-          await fetch(getAuthApiUrl('/verify-email'), {
-            method: 'POST',
-            credentials: 'include',
-          });
-        } catch (verifyError) {
-          // Non-critical - log but don't block the flow
-          console.warn('Failed to mark email as verified:', verifyError);
+        if (appConfig.auth.requireEmailVerification) {
+          try {
+            await fetch(getAuthApiUrl('/verify-email'), {
+              method: 'POST',
+              credentials: 'include',
+            });
+          } catch (verifyError) {
+            // Non-critical - log but don't block the flow
+            console.warn('Failed to mark email as verified:', verifyError);
+          }
         }
 
         // Prefetch session to update header immediately
         await authClient.getSession();
 
-        // Check if user already has a passkey (e.g. from passkey signup flow)
-        const userPasskeys = await authClient.passkey.listUserPasskeys().catch(() => ({ data: [] }));
-        if (userPasskeys.data && userPasskeys.data.length > 0) {
-          navigate(appConfig.routes.authenticated.dashboard);
-        } else {
-          navigate('/setup-passkey');
+        // If passkeys enabled, offer setup for users who don't have one yet
+        if (isFeatureEnabled('passkey') && typeof window !== 'undefined' && window.PublicKeyCredential) {
+          const userPasskeys = await authClient.passkey.listUserPasskeys().catch(() => ({ data: [] }));
+          if (!userPasskeys.data || userPasskeys.data.length === 0) {
+            navigate('/setup-passkey');
+            return;
+          }
         }
+
+        const storedCallback = sessionStorage.getItem('loginCallback');
+        const callbackURL = sanitizeCallbackUrl(storedCallback, appConfig.routes.authenticated.dashboard);
+        sessionStorage.removeItem('loginCallback');
+        navigate(callbackURL);
       }
     } catch (error) {
       setAlertDialog({

@@ -3,7 +3,6 @@ import {
     adminClient,
     emailOTPClient,
     jwtClient,
-    anonymousClient,
 } from "better-auth/client/plugins";
 import { apiKeyClient } from "@better-auth/api-key/client";
 import { passkeyClient } from "@better-auth/passkey/client";
@@ -21,7 +20,6 @@ function _createClient() {
             adminClient(),
             emailOTPClient(),
             jwtClient(),
-            anonymousClient(),
             passkeyClient(),
         ],
         fetchOptions: {

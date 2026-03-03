@@ -1,6 +1,7 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useSearchParams } from 'react-router-dom';
 import authClient from '@/auth/authClient';
 import { appConfig } from '@/config/app';
+import { sanitizeCallbackUrl } from '@/utils/url-validation';
 
 /**
  * Loading spinner component
@@ -102,6 +103,7 @@ export function AdminGuard() {
  */
 export function GuestGuard() {
   const { data: session, isPending, error, refetch } = authClient.useSession();
+  const [searchParams] = useSearchParams();
 
   if (isPending) {
     return <LoadingSpinner />;
@@ -114,7 +116,14 @@ export function GuestGuard() {
   const isAnonymous = (session?.user as any)?.isAnonymous === true;
 
   if (session && !isAnonymous) {
-    return <Navigate to={appConfig.routes.authenticated.dashboard} replace />;
+    const redirectParam = searchParams.get('redirect');
+    const destination = sanitizeCallbackUrl(redirectParam, appConfig.routes.authenticated.dashboard);
+    // Cross-origin redirects need window.location, not Navigate
+    if (redirectParam && destination === redirectParam) {
+      window.location.href = destination;
+      return <LoadingSpinner />;
+    }
+    return <Navigate to={destination} replace />;
   }
 
   return <Outlet />;

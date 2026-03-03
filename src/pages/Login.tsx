@@ -23,7 +23,9 @@ export default function LoginPage() {
   const [supportsWebAuthn, setSupportsWebAuthn] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const showPasswordAuth = isFeatureEnabled('passwordAuth');
+  const showPasswordAuth = isFeatureEnabled('password');
+  const showEmailOTP = isFeatureEnabled('emailOTP');
+  const showPasskey = isFeatureEnabled('passkey');
 
   useEffect(() => {
     setSupportsWebAuthn(typeof window !== 'undefined' && !!window.PublicKeyCredential);
@@ -187,7 +189,7 @@ export default function LoginPage() {
               e.preventDefault();
               if (showPasswordAuth) {
                 handlePasswordLogin();
-              } else {
+              } else if (showEmailOTP) {
                 handleSendOtp();
               }
             }}
@@ -240,7 +242,7 @@ export default function LoginPage() {
                     </>
                   )}
                 </Button>
-              ) : (
+              ) : showEmailOTP ? (
               <Button
                 type="submit"
                 className="w-full"
@@ -259,9 +261,9 @@ export default function LoginPage() {
                   </>
                 )}
               </Button>
-              )}
+              ) : null}
 
-              {supportsWebAuthn && (
+              {showPasskey && supportsWebAuthn && (
                 <>
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">
