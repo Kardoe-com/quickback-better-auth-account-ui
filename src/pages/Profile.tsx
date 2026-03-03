@@ -528,19 +528,9 @@ export default function ProfilePage() {
                       <Building2 className="h-5 w-5" />
                       {appConfig.labels.organizations || 'Organizations'}
                     </CardTitle>
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm text-muted-foreground">
-                        {organizations?.length || 0} {appConfig.messages.total || 'total'}
-                      </span>
-                      {isAdmin && (
-                        <Button variant="outline" size="sm" asChild>
-                          <Link to="/organizations/new">
-                            <Plus className="h-4 w-4 mr-1" />
-                            {appConfig.messages.new || 'New'}
-                          </Link>
-                        </Button>
-                      )}
-                    </div>
+                    <span className="text-sm text-muted-foreground">
+                      {organizations?.length || 0} {appConfig.messages.total || 'total'}
+                    </span>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -562,16 +552,7 @@ export default function ProfilePage() {
                         <Building2 className="h-12 w-12 mx-auto opacity-20" />
                       </div>
                       <p className="text-muted-foreground mb-4">{appConfig.messages.noOrganizations || "You're not a member of any organizations yet."}</p>
-                      {isAdmin ? (
-                        <Button asChild>
-                          <Link to="/organizations/new">
-                            <Plus className="h-4 w-4 mr-2" />
-                            {appConfig.messages.createOrganization || 'Create Organization'}
-                          </Link>
-                        </Button>
-                      ) : (
-                        <p className="text-sm text-muted-foreground">{appConfig.messages.contactAdminForInvite || 'Contact an admin to be invited to an organization.'}</p>
-                      )}
+                      <p className="text-sm text-muted-foreground">{appConfig.messages.contactAdminForInvite || 'Contact an admin to be invited to an organization.'}</p>
                     </div>
                   ) : (
                     <div className="space-y-2">

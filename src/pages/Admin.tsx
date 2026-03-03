@@ -16,9 +16,10 @@ import { CreateSubscriptionDialog } from '@/app/(authenticated)/admin/components
 import { EditSubscriptionDialog } from '@/app/(authenticated)/admin/components/EditSubscriptionDialog';
 import { DeleteSubscriptionDialog } from '@/app/(authenticated)/admin/components/DeleteSubscriptionDialog';
 import { User, Subscription } from '@/app/(authenticated)/admin/types';
-import { Users, UserPlus, Shield, AlertTriangle, CreditCard, Crown, Plus } from 'lucide-react';
+import { Users, UserPlus, Shield, AlertTriangle, CreditCard, Crown, Plus, Building2, ChevronRight } from 'lucide-react';
 import { isStripeConfiguredClient } from '@/lib/stripe';
-import { isFeatureEnabled } from '@/config/app';
+import { appConfig, isFeatureEnabled } from '@/config/app';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export default function AdminPage() {
   const { data: session, isPending } = authClient.useSession();
@@ -52,8 +53,20 @@ export default function AdminPage() {
   // Loading state for impersonation
   const [isImpersonating, setIsImpersonating] = useState(false);
 
+  // Organization list
+  const { data: organizations, isPending: orgsLoading } = authClient.useListOrganizations();
+
   // Check if user is admin
   const isAdmin = (session?.user as any)?.role === 'admin';
+
+  const getOrgInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map((word) => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
 
   useEffect(() => {
     if (!isPending && !session) {
@@ -205,6 +218,12 @@ export default function AdminPage() {
               <Users className="h-4 w-4" />
               Users
             </TabsTrigger>
+            {isFeatureEnabled('organizations') && (
+              <TabsTrigger value="organizations" className="gap-2">
+                <Building2 className="h-4 w-4" />
+                Organizations
+              </TabsTrigger>
+            )}
             {isFeatureEnabled('subscriptions') && (
               <TabsTrigger value="subscriptions" className="gap-2">
                 <Crown className="h-4 w-4" />
@@ -239,6 +258,64 @@ export default function AdminPage() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {isFeatureEnabled('organizations') && (
+            <TabsContent value="organizations" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle>Organization Management</CardTitle>
+                      <CardDescription>View all organizations and create new ones.</CardDescription>
+                    </div>
+                    <Button asChild>
+                      <Link to="/organizations/new">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Create Organization
+                      </Link>
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {orgsLoading ? (
+                    <div className="space-y-3">
+                      {[1, 2].map((i) => (
+                        <div key={i} className="flex items-center gap-4 p-4 border rounded-lg animate-pulse">
+                          <div className="h-10 w-10 rounded-full bg-muted" />
+                          <div className="flex-1 space-y-2">
+                            <div className="h-4 bg-muted rounded w-1/3" />
+                            <div className="h-3 bg-muted rounded w-1/4" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : !organizations || organizations.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-12 text-center">
+                      <Building2 className="h-12 w-12 mx-auto opacity-20 mb-4" />
+                      <p className="text-muted-foreground">No organizations yet.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {organizations.map((org: any) => (
+                        <Link key={org.id} to={`/${org.slug}`} className="flex items-center gap-4 p-4 border rounded-lg hover:bg-accent transition-colors group">
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage src={org.logo || undefined} />
+                            <AvatarFallback className="bg-primary text-primary-foreground">{getOrgInitials(org.name)}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-medium truncate">{org.name}</h3>
+                            <p className="text-sm text-muted-foreground truncate">/{org.slug}</p>
+                          </div>
+                          <span className="text-sm text-muted-foreground">{org.members?.length || 0} members</span>
+                          <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
 
           {isFeatureEnabled('subscriptions') && (
             <TabsContent value="subscriptions" className="space-y-4">
