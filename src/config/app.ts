@@ -415,11 +415,11 @@ export let appConfig: AppConfig = {
     accountDeletion: envBool('ENABLE_ACCOUNT_DELETION', true),
     fileUploads: envBool('VITE_ENABLE_FILE_UPLOADS', false),
     themeToggle: envBool('ENABLE_THEME_TOGGLE', true),
-    teams: envBool('ENABLE_TEAMS', true),
+    teams: envBool('ENABLE_TEAMS', false),
     passkeySignup: envBool('ENABLE_PASSKEY_SIGNUP', true),
     passwordAuth: envBool('ENABLE_PASSWORD_AUTH', false),
     subscriptions: envBool('ENABLE_SUBSCRIPTIONS', false),
-    realtime: envBool('ENABLE_REALTIME', true),
+    realtime: envBool('ENABLE_REALTIME', false),
   },
 
   // Stripe Configuration

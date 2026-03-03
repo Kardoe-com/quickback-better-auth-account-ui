@@ -56,12 +56,14 @@ export default function OrganizationLayout() {
         const currentMember = result.data.members?.find((m: any) => m.userId === userId);
         setMember(currentMember);
 
-        // Fetch subscription for this organization
-        try {
-          const sub = await getOrganizationSubscription(result.data.id);
-          setSubscription(sub);
-        } catch (err) {
-          console.error('Error fetching subscription:', err);
+        // Fetch subscription for this organization (only if subscriptions feature is enabled)
+        if (isFeatureEnabled('subscriptions')) {
+          try {
+            const sub = await getOrganizationSubscription(result.data.id);
+            setSubscription(sub);
+          } catch (err) {
+            console.error('Error fetching subscription:', err);
+          }
         }
 
         // Mark this slug as fetched
