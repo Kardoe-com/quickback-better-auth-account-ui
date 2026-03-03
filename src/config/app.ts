@@ -177,7 +177,7 @@ export interface AppConfig {
     admin: boolean;
     passkeys: boolean;
     emailOTP: boolean;
-    magicLink: boolean;
+
     socialAuth: boolean;
     emailVerification: boolean;
     signup: boolean;
@@ -186,7 +186,7 @@ export interface AppConfig {
     themeToggle: boolean;
     teams: boolean;
     passkeySignup: boolean;
-    /** Dev-only: enable email+password signup and login (bypasses OTP/magic link) */
+    /** Dev-only: enable email+password signup and login (bypasses OTP) */
     passwordAuth: boolean;
     subscriptions: boolean;
     realtime: boolean;
@@ -408,7 +408,7 @@ export let appConfig: AppConfig = {
     admin: envBool('ENABLE_ADMIN', true),
     passkeys: envBool('ENABLE_PASSKEYS', true),
     emailOTP: envBool('ENABLE_EMAIL_OTP', true),
-    magicLink: envBool('ENABLE_MAGIC_LINK', false),
+
     socialAuth: envBool('ENABLE_SOCIAL_AUTH', false),
     emailVerification: envBool('ENABLE_EMAIL_VERIFICATION', true),
     signup: envBool('ENABLE_SIGNUP', true),

@@ -13,7 +13,7 @@ import { sanitizeCallbackUrl } from '@/utils/url-validation';
 import { Mail, Fingerprint, KeyRound } from 'lucide-react';
 
 export default function LoginPage() {
-  const [isLoadingMagicLink, setIsLoadingMagicLink] = useState(false);
+  const [isLoadingOtp, setIsLoadingMagicLink] = useState(false);
   const [isPasskeyLoading, setIsPasskeyLoading] = useState(false);
   const [alertDialog, setAlertDialog] = useState({ open: false, title: '', description: '' });
   const [email, setEmail] = useState('');
@@ -54,7 +54,7 @@ export default function LoginPage() {
       });
   }, []);
 
-  const handleSendMagicLink = async () => {
+  const handleSendOtp = async () => {
     if (!email) {
       setAlertDialog({
         open: true,
@@ -188,7 +188,7 @@ export default function LoginPage() {
               if (showPasswordAuth) {
                 handlePasswordLogin();
               } else {
-                handleSendMagicLink();
+                handleSendOtp();
               }
             }}
             className="space-y-4"
@@ -244,10 +244,10 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 className="w-full"
-                disabled={isLoadingMagicLink || !email || !email.includes('@')}
+                disabled={isLoadingOtp || !email || !email.includes('@')}
                 title={!email ? 'Please enter your email' : !email.includes('@') ? 'Please enter a valid email' : ''}
               >
-                {isLoadingMagicLink ? (
+                {isLoadingOtp ? (
                   <div className="flex items-center justify-center gap-2">
                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                     <span>Sending...</span>
@@ -255,7 +255,7 @@ export default function LoginPage() {
                 ) : (
                   <>
                     <Mail className="mr-2 h-4 w-4" />
-                    Send Sign-in Link
+                    Send Sign-in Code
                   </>
                 )}
               </Button>

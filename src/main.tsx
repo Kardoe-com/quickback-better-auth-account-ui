@@ -93,7 +93,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 //         admin: true,
 //         passkeys: true,
 //         emailOTP: true,
-//         magicLink: true,
+
 //         socialAuth: false,
 //         emailVerification: true,
 //         accountDeletion: true,

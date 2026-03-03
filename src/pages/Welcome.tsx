@@ -11,7 +11,7 @@ import { getAuthApiUrl } from '@/config/runtime';
 import { sanitizeCallbackUrl } from '@/utils/url-validation';
 
 export default function WelcomePage() {
-  const [isLoadingMagicLink, setIsLoadingMagicLink] = useState(false);
+  const [isLoadingOtp, setIsLoadingMagicLink] = useState(false);
   const [alertDialog, setAlertDialog] = useState({ open: false, title: '', description: '' });
   const [otp, setOTP] = useState('');
   const [email, setEmail] = useState('');
@@ -19,7 +19,7 @@ export default function WelcomePage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // Handle URL parameters for OTP magic link
+  // Handle URL parameters for OTP verification
   useEffect(() => {
     const encodedData = searchParams.get('data');
 
@@ -32,7 +32,7 @@ export default function WelcomePage() {
         if (data.email) {
           setEmail(data.email);
 
-          // If we have an OTP (from magic link), set it up for auto-submit
+          // If we have an OTP, set it up for auto-submit
           if (data.otp) {
             setOTP(data.otp);
 
@@ -47,14 +47,14 @@ export default function WelcomePage() {
           }
         }
       } catch (error) {
-        console.error('Failed to decode magic link data:', error);
+        console.error('Failed to decode OTP data:', error);
       }
     }
   }, [searchParams, hasAutoSubmitted]);
 
-  // Auto-submit when we have OTP and email from magic link
+  // Auto-submit when we have OTP and email from URL params
   useEffect(() => {
-    if (hasAutoSubmitted && otp && email && !isLoadingMagicLink) {
+    if (hasAutoSubmitted && otp && email && !isLoadingOtp) {
       // Reset the flag to prevent further auto-submits
       setHasAutoSubmitted(false);
 
@@ -67,11 +67,11 @@ export default function WelcomePage() {
       const timer = setTimeout(submitForm, 500);
       return () => clearTimeout(timer);
     }
-  }, [hasAutoSubmitted, otp, email, isLoadingMagicLink]);
+  }, [hasAutoSubmitted, otp, email, isLoadingOtp]);
 
   // Auto-submit when user enters 6th digit
   useEffect(() => {
-    if (otp.length === 6 && email && !isLoadingMagicLink) {
+    if (otp.length === 6 && email && !isLoadingOtp) {
       // Auto-submit the form
       const submitForm = async () => {
         await handleVerifyOTP(new Event('submit') as any);
@@ -81,9 +81,9 @@ export default function WelcomePage() {
       const timer = setTimeout(submitForm, 100);
       return () => clearTimeout(timer);
     }
-  }, [otp, email, isLoadingMagicLink]);
+  }, [otp, email, isLoadingOtp]);
 
-  const handleSendMagicLink = async () => {
+  const handleResendOtp = async () => {
     if (!email) {
       setAlertDialog({
         open: true,
@@ -217,8 +217,8 @@ export default function WelcomePage() {
               </div>
             </div>
 
-            <Button type="submit" className="w-full" disabled={isLoadingMagicLink || otp.length !== 6}>
-              {isLoadingMagicLink ? (
+            <Button type="submit" className="w-full" disabled={isLoadingOtp || otp.length !== 6}>
+              {isLoadingOtp ? (
                 <div className="flex items-center justify-center gap-2">
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                   <span>Verifying...</span>
@@ -229,7 +229,7 @@ export default function WelcomePage() {
             </Button>
 
             <div className="flex gap-2 justify-center text-sm">
-              <Button type="button" variant="link" onClick={handleSendMagicLink} disabled={isLoadingMagicLink}>
+              <Button type="button" variant="link" onClick={handleResendOtp} disabled={isLoadingOtp}>
                 Resend code
               </Button>
               <span className="text-muted-foreground">•</span>

@@ -23,7 +23,7 @@ export default function EmailOTPPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  // Handle URL parameters for OTP magic link
+  // Handle URL parameters for OTP verification
   useEffect(() => {
     const encodedData = searchParams.get('data');
 
@@ -36,7 +36,7 @@ export default function EmailOTPPage() {
         if (data.email) {
           setEmail(data.email);
 
-          // If we have an OTP (from magic link), set it up for auto-submit
+          // If we have an OTP, set it up for auto-submit
           if (data.otp) {
             setOTP(data.otp);
 
@@ -51,12 +51,12 @@ export default function EmailOTPPage() {
           }
         }
       } catch (error) {
-        console.error('Failed to decode magic link data:', error);
+        console.error('Failed to decode OTP data:', error);
       }
     }
   }, [searchParams, hasAutoSubmitted]);
 
-  // Auto-submit when we have OTP and email from magic link
+  // Auto-submit when we have OTP and email from URL params
   useEffect(() => {
     if (hasAutoSubmitted && otp && email && !isLoading) {
       // Reset the flag to prevent further auto-submits
