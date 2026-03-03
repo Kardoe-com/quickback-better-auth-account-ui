@@ -59,10 +59,14 @@ export default function Header() {
         <div className="flex h-16 items-center justify-between">
           {/* App Logo & Name */}
           <Link to={session?.user ? '/profile' : '/'} className="flex items-center space-x-2">
-            {appConfig.branding.logoUrl && (
-              <img src={appConfig.branding.logoUrl} alt={appConfig.name || 'Logo'} className="h-8 w-8 object-contain" />
+            {appConfig.branding.logoUrl ? (
+              <>
+                <img src={appConfig.branding.logoUrl} alt={appConfig.name || 'Logo'} className="h-8 object-contain" />
+                <h1 className="sr-only">{appConfig.name || 'Account'}</h1>
+              </>
+            ) : (
+              <h1 className="text-xl font-bold">{appConfig.name || 'Account'}</h1>
             )}
-            <h1 className="text-xl font-bold">{appConfig.name || 'Account'}</h1>
           </Link>
 
           {/* Right Section */}
