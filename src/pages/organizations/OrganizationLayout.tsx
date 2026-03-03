@@ -4,7 +4,7 @@ import authClient from '@/auth/authClient';
 import { refreshAuthToken } from '@/lib/jwt-refresh';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { LayoutDashboard, Users, Mail, Settings, UsersRound, Key, Crown } from 'lucide-react';
+import { LayoutDashboard, Users, Mail, Settings, Key, Crown } from 'lucide-react';
 import { appConfig, isFeatureEnabled } from '@/config/app';
 import { getOrganizationSubscription } from '@/lib/subscriptions';
 import { Subscription } from '@/app/(authenticated)/admin/types';
@@ -112,7 +112,7 @@ export default function OrganizationLayout() {
     const pathname = location.pathname;
     if (pathname.endsWith('/members')) return 'members';
     if (pathname.endsWith('/invitations')) return 'invitations';
-    if (pathname.endsWith('/teams')) return 'teams';
+
     if (pathname.endsWith('/settings')) return 'settings';
     if (pathname.endsWith('/api-keys')) return 'api-keys';
     return 'overview';
@@ -178,17 +178,7 @@ export default function OrganizationLayout() {
                   Invitations
                 </Link>
               )}
-              {isOwnerOrAdmin && isFeatureEnabled('teams') && (
-                <Link
-                  to={`/${slug}/teams`}
-                  className={`flex items-center gap-2 px-3 py-2 text-sm font-medium border-b-2 transition-colors ${
-                    getActiveTab() === 'teams' ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  <UsersRound className="h-4 w-4" />
-                  Teams
-                </Link>
-              )}
+
               {isOwnerOrAdmin && (
                 <Link
                   to={`/${slug}/settings`}

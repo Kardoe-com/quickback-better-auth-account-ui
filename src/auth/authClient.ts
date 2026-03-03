@@ -16,11 +16,7 @@ function _createClient() {
         baseURL: getApiBase(),
         basePath: appConfig.routes.api.auth,
         plugins: [
-            organizationClient({
-                teams: {
-                    enabled: true,
-                },
-            }),
+            organizationClient(),
             apiKeyClient(),
             adminClient(),
             emailOTPClient(),

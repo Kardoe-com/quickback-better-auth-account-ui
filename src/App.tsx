@@ -30,7 +30,7 @@ import OrganizationOverview from '@/pages/organizations/OrganizationOverview';
 import OrganizationMembers from '@/pages/organizations/OrganizationMembers';
 import OrganizationInvitations from '@/pages/organizations/OrganizationInvitations';
 import OrganizationSettings from '@/pages/organizations/OrganizationSettings';
-import OrganizationTeams from '@/pages/organizations/OrganizationTeams';
+
 import AdminPage from '@/pages/Admin';
 
 // Passkey pages (placeholders)
@@ -91,7 +91,7 @@ export default function App() {
                 <Route index element={<OrganizationOverview />} />
                 <Route path="members" element={<OrganizationMembers />} />
                 <Route path="invitations" element={<OrganizationInvitations />} />
-                <Route path="teams" element={<OrganizationTeams />} />
+
                 <Route path="settings" element={<OrganizationSettings />} />
                 <Route path="api-keys" element={<OrganizationApiKeys />} />
               </Route>

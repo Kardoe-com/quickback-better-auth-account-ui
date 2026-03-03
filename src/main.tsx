@@ -99,7 +99,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 //         accountDeletion: true,
 //         fileUploads: false,
 //         themeToggle: true,
-//         teams: true,
+
 //       },
 //     });
 //

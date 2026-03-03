@@ -85,7 +85,7 @@ export function DeleteOrganizationDialog({
             </p>
             <ul className="list-disc list-inside text-sm space-y-1">
               <li>All organization members</li>
-              <li>All teams</li>
+
               <li>All pending invitations</li>
               <li>Organization settings and metadata</li>
             </ul>
