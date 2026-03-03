@@ -408,7 +408,7 @@ export let appConfig: AppConfig = {
     admin: envBool('ENABLE_ADMIN', true),
     passkeys: envBool('ENABLE_PASSKEYS', true),
     emailOTP: envBool('ENABLE_EMAIL_OTP', true),
-    magicLink: envBool('ENABLE_MAGIC_LINK', true),
+    magicLink: envBool('ENABLE_MAGIC_LINK', false),
     socialAuth: envBool('ENABLE_SOCIAL_AUTH', false),
     emailVerification: envBool('ENABLE_EMAIL_VERIFICATION', true),
     signup: envBool('ENABLE_SIGNUP', true),
