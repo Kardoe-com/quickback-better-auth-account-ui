@@ -151,7 +151,6 @@ export interface AppConfig {
       apiKeys: string;
     };
     organizations: {
-      list: string;
       create: string;
       detail: (slug: string) => string;
       members: (slug: string) => string;
@@ -175,16 +174,7 @@ export interface AppConfig {
   features: {
     organizations: boolean;
     admin: boolean;
-    passkeys: boolean;
-    emailOTP: boolean;
-
-    socialAuth: boolean;
-    emailVerification: boolean;
-    signup: boolean;
-    accountDeletion: boolean;
     fileUploads: boolean;
-    themeToggle: boolean;
-
     passkeySignup: boolean;
     /** Dev-only: enable email+password signup and login (bypasses OTP) */
     passwordAuth: boolean;
@@ -377,7 +367,6 @@ export let appConfig: AppConfig = {
       apiKeys: "/api-keys",
     },
     organizations: {
-      list: '/organizations',
       create: '/organizations/new',
       detail: (slug: string) => `/${slug}`,
       members: (slug: string) => `/${slug}/members`,
@@ -406,16 +395,7 @@ export let appConfig: AppConfig = {
   features: {
     organizations: envBool('ENABLE_ORGANIZATIONS', true),
     admin: envBool('ENABLE_ADMIN', true),
-    passkeys: envBool('ENABLE_PASSKEYS', true),
-    emailOTP: envBool('ENABLE_EMAIL_OTP', true),
-
-    socialAuth: envBool('ENABLE_SOCIAL_AUTH', false),
-    emailVerification: envBool('ENABLE_EMAIL_VERIFICATION', true),
-    signup: envBool('ENABLE_SIGNUP', true),
-    accountDeletion: envBool('ENABLE_ACCOUNT_DELETION', true),
     fileUploads: envBool('VITE_ENABLE_FILE_UPLOADS', false),
-    themeToggle: envBool('ENABLE_THEME_TOGGLE', true),
-
     passkeySignup: envBool('ENABLE_PASSKEY_SIGNUP', true),
     passwordAuth: envBool('ENABLE_PASSWORD_AUTH', false),
     subscriptions: envBool('ENABLE_SUBSCRIPTIONS', false),
@@ -573,35 +553,6 @@ export function setAppConfig(overrides: AppConfigOverrides): void {
  */
 export function isFeatureEnabled(feature: keyof AppConfig['features']): boolean {
   return appConfig.features[feature] ?? false;
-}
-
-/**
- * Helper to check if a route is protected (requires auth)
- */
-export function isProtectedRoute(pathname: string): boolean {
-  const protectedPaths = [
-    appConfig.routes.authenticated.dashboard,
-    appConfig.routes.authenticated.profile,
-    appConfig.routes.authenticated.settings,
-    appConfig.routes.organizations.list,
-    appConfig.routes.admin.dashboard,
-  ];
-  
-  return protectedPaths.some(path => pathname.startsWith(path));
-}
-
-/**
- * Helper to check if a route is an auth route (login/signup)
- */
-export function isAuthRoute(pathname: string): boolean {
-  return pathname === appConfig.routes.public.login || pathname === appConfig.routes.public.signup;
-}
-
-/**
- * Helper to check if a route is an admin route
- */
-export function isAdminRoute(pathname: string): boolean {
-  return pathname.startsWith(appConfig.routes.admin.dashboard);
 }
 
 /**

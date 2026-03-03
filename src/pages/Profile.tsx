@@ -4,7 +4,7 @@ import authClient from '@/auth/authClient';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Clock, Calendar, Trash2, ChevronRight, Plus, Building2, Mail, Check, X, Fingerprint, Image, Pencil, Monitor } from 'lucide-react';
+import { MapPin, Clock, Calendar, ChevronRight, Plus, Building2, Mail, Check, X, Fingerprint, Image, Pencil, Monitor, Trash2 } from 'lucide-react';
 import { appConfig } from '@/config/app';
 import { AvatarUploadDialog } from '@/components/account/AvatarUploadDialog';
 import { EditNameDialog } from '@/components/account/EditNameDialog';

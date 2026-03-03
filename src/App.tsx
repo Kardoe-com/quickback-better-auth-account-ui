@@ -23,7 +23,7 @@ import AcceptInvitationPage from '@/pages/AcceptInvitation';
 
 // Authenticated pages
 import ProfilePage from '@/pages/Profile';
-import OrganizationsRedirect from '@/pages/OrganizationsRedirect';
+
 import NewOrganizationPage from '@/pages/organizations/NewOrganization';
 import OrganizationLayout from '@/pages/organizations/OrganizationLayout';
 import OrganizationOverview from '@/pages/organizations/OrganizationOverview';
@@ -80,7 +80,7 @@ export default function App() {
           <Route element={<AuthGuard />}>
             <Route element={<AuthenticatedLayout />}>
               <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/organizations" element={<OrganizationsRedirect />} />
+
               <Route path="/organizations/new" element={<NewOrganizationPage />} />
               <Route path="/manage-passkeys" element={<ManagePasskeysPage />} />
               <Route path="/setup-passkey" element={<SetupPasskeyPage />} />
