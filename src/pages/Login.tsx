@@ -192,6 +192,7 @@ export default function LoginPage() {
               } else if (showEmailOTP) {
                 handleSendOtp();
               }
+              // passkey uses onClick, not form submit
             }}
             className="space-y-4"
           >
@@ -218,16 +219,16 @@ export default function LoginPage() {
                   autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  required
                 />
               </div>
             )}
 
             <div className="flex flex-col gap-3">
-              {showPasswordAuth ? (
+              {showPasswordAuth && (
                 <Button
-                  type="submit"
+                  type="button"
                   className="w-full"
+                  onClick={handlePasswordLogin}
                   disabled={isPasswordLoading || !email || !password}
                 >
                   {isPasswordLoading ? (
@@ -242,41 +243,58 @@ export default function LoginPage() {
                     </>
                   )}
                 </Button>
-              ) : showEmailOTP ? (
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isLoadingOtp || !email || !email.includes('@')}
-                title={!email ? 'Please enter your email' : !email.includes('@') ? 'Please enter a valid email' : ''}
-              >
-                {isLoadingOtp ? (
-                  <div className="flex items-center justify-center gap-2">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                    <span>Sending...</span>
-                  </div>
-                ) : (
-                  <>
-                    <Mail className="mr-2 h-4 w-4" />
-                    Send Sign-in Code
-                  </>
-                )}
-              </Button>
-              ) : null}
+              )}
+
+              {showEmailOTP && (
+                <>
+                  {showPasswordAuth && (
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-background px-2 text-muted-foreground">Or</span>
+                      </div>
+                    </div>
+                  )}
+                  <Button
+                    type="button"
+                    variant={showPasswordAuth ? 'outline' : 'default'}
+                    className="w-full"
+                    onClick={handleSendOtp}
+                    disabled={isLoadingOtp || !email || !email.includes('@')}
+                    title={!email ? 'Please enter your email' : !email.includes('@') ? 'Please enter a valid email' : ''}
+                  >
+                    {isLoadingOtp ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                        <span>Sending...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <Mail className="mr-2 h-4 w-4" />
+                        Sign in with Email Code
+                      </>
+                    )}
+                  </Button>
+                </>
+              )}
 
               {showPasskey && supportsWebAuthn && (
                 <>
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t" />
+                  {(showPasswordAuth || showEmailOTP) && (
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-background px-2 text-muted-foreground">Or</span>
+                      </div>
                     </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-background px-2 text-muted-foreground">Or</span>
-                    </div>
-                  </div>
-
+                  )}
                   <Button
                     type="button"
-                    variant="outline"
+                    variant={(showPasswordAuth || showEmailOTP) ? 'outline' : 'default'}
                     className="w-full"
                     onClick={handlePasskeySignIn}
                     disabled={isPasskeyLoading}

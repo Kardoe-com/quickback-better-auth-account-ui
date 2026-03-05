@@ -59,27 +59,19 @@ export default function Header() {
         <div className="flex h-16 items-center justify-between">
           {/* App Logo & Name */}
           <Link to={session?.user ? '/profile' : '/'} className="flex items-center space-x-2">
-            {appConfig.branding.logoUrl ? (
-              <>
-                <img src={appConfig.branding.logoUrl} alt={appConfig.name || 'Logo'} className="h-8 object-contain" />
-                <h1 className="sr-only">{appConfig.name || 'Account'}</h1>
-              </>
-            ) : (
-              <h1 className="text-xl font-bold">{appConfig.name || 'Account'}</h1>
+            {appConfig.branding.logoUrl && (
+              <img
+                src={appConfig.branding.logoUrl}
+                alt=""
+                className="h-8 object-contain"
+                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              />
             )}
+            <h1 className="text-xl font-bold">{appConfig.name || 'Account'}</h1>
           </Link>
 
           {/* Right Section */}
           <div className="flex items-center space-x-2 sm:space-x-4">
-            {/* App Link */}
-            {appConfig.urls.app && (
-              <Button variant="outline" size="sm" asChild>
-                <a href={appConfig.urls.app}>
-                  Open App
-                  <ExternalLink className="ml-1.5 h-3 w-3" />
-                </a>
-              </Button>
-            )}
             {/* Organization Switcher - Only shown on organization pages */}
             {session?.user && organizations && organizations.length > 0 && (() => {
               const RESERVED_PATHS = ['/profile', '/login', '/signup', '/email-otp', '/welcome', '/forgot-password', '/account-deleted', '/accept-invitation', '/organizations', '/manage-passkeys', '/setup-passkey', '/devices', '/admin', '/cli'];

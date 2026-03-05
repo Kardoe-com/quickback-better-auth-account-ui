@@ -4,7 +4,8 @@ import authClient from '@/auth/authClient';
 import { refreshAuthToken } from '@/lib/jwt-refresh';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { LayoutDashboard, Users, Mail, Settings, Key, Crown } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { LayoutDashboard, Users, Mail, Settings, Key, Crown, ExternalLink } from 'lucide-react';
 import { appConfig, isFeatureEnabled } from '@/config/app';
 import { getOrganizationSubscription } from '@/lib/subscriptions';
 import { Subscription } from '@/app/(authenticated)/admin/types';
@@ -144,6 +145,14 @@ export default function OrganizationLayout() {
               </div>
               <p className="text-sm text-muted-foreground">/{organization.slug}</p>
             </div>
+            {appConfig.urls.app && (
+              <Button variant="outline" size="sm" asChild>
+                <a href={appConfig.urls.app}>
+                  Open App
+                  <ExternalLink className="ml-1.5 h-3 w-3" />
+                </a>
+              </Button>
+            )}
           </div>
 
           {/* Navigation Tabs */}
