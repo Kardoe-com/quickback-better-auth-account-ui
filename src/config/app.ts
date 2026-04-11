@@ -265,7 +265,7 @@ export let appConfig: AppConfig = {
       }
       return baseUrl;
     })(),
-    app: env('VITE_APP_URL', ''),
+    app: env('VITE_QUICKBACK_APP_URL', ''),
     tenantPattern: env('VITE_TENANT_URL_PATTERN', '/{slug}'),
     support: env('VITE_SUPPORT_URL', ''),
     privacy: env('VITE_PRIVACY_URL', ''),
@@ -565,7 +565,7 @@ export function isFeatureEnabled(feature: keyof AppConfig['features']): boolean 
  * @returns Full URL to the organization in the main app, or null if not configured
  *
  * @example
- * // With VITE_APP_URL=https://app.example.com and VITE_TENANT_URL_PATTERN=/tenant/{slug}
+ * // With VITE_QUICKBACK_APP_URL=https://app.example.com and VITE_TENANT_URL_PATTERN=/tenant/{slug}
  * getTenantUrl('acme-corp') // returns 'https://app.example.com/tenant/acme-corp'
  *
  * @example

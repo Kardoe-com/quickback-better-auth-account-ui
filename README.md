@@ -62,10 +62,10 @@ cp .env.example .env.development
 
 ```bash
 # Your Better Auth API backend
-VITE_API_URL=http://localhost:3000
+VITE_QUICKBACK_API_URL=http://localhost:3000
 
 # This frontend's URL
-VITE_APP_URL=http://localhost:5173
+VITE_QUICKBACK_APP_URL=http://localhost:5173
 
 # Optional: Stripe publishable key (if using billing plugin)
 VITE_STRIPE_PUBLISHABLE_KEY=
