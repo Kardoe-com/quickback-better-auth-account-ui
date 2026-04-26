@@ -100,7 +100,7 @@ export default function SignUpPage() {
           email: signupForm.email,
           type: 'sign-in',
         })
-        .catch((error) => {
+        .catch((error: unknown) => {
           console.error('Failed to send welcome email:', error);
         });
     } catch (error) {

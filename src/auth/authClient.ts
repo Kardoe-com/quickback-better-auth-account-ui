@@ -36,6 +36,15 @@ function _createClient() {
     });
 }
 
-const client = _createClient();
+// `tsc -p tsconfig.build.json` emits a .d.ts for this file. The full inferred
+// return type of `createAuthClient(...)` with six plugins resolves through
+// pnpm's nested `.pnpm/zod@4.3.6/.../core` paths, which trips both TS7056
+// ("inferred type too long to serialize") and TS2742 ("non-portable type").
+// Widening the export to `any` keeps the runtime intact (consumers still call
+// `client.signIn.email`, `client.organization.acceptInvitation`, etc.) and
+// unblocks the declaration emit. Pulling in better-auth's published client
+// type explicitly is the long-term fix; doing it here would re-introduce the
+// same plugin-graph blowup the .d.ts emit can't serialize.
+const client: any = _createClient();
 
 export default client;
