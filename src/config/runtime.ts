@@ -144,15 +144,15 @@ export function getStorageApiUrl(path: string): string {
   return `${getApiBase()}${appConfig.routes.api.storage}${path}`;
 }
 
-/** Build the WebSocket URL for realtime connections */
-export function getRealtimeWsUrl(): string {
+/** Build the WebSocket URL for broadcast subscriptions */
+export function getBroadcastWsUrl(): string {
   const base = getApiBase().replace(/^http/, 'ws');
-  const realtimePath = appConfig.routes.api.realtime || '/realtime/v1';
-  return `${base}${realtimePath}/websocket`;
+  const broadcastPath = appConfig.routes.api.broadcast || '/broadcast/v1';
+  return `${base}${broadcastPath}/websocket`;
 }
 
 /** Build the URL for fetching a ws-ticket */
-export function getRealtimeTicketUrl(): string {
-  const realtimePath = appConfig.routes.api.realtime || '/realtime/v1';
-  return `${getApiBase()}${realtimePath}/ws-ticket`;
+export function getBroadcastTicketUrl(): string {
+  const broadcastPath = appConfig.routes.api.broadcast || '/broadcast/v1';
+  return `${getApiBase()}${broadcastPath}/ws-ticket`;
 }

@@ -17,8 +17,8 @@ export {
   getAuthApiUrl,
   getDataApiUrl,
   getStorageApiUrl,
-  getRealtimeWsUrl,
-  getRealtimeTicketUrl,
+  getBroadcastWsUrl,
+  getBroadcastTicketUrl,
 } from './config/runtime';
 export { RealtimeProvider, useRealtime, useRealtimeStatus } from './providers/RealtimeProvider';
 export type { RealtimeMessage } from './providers/RealtimeProvider';

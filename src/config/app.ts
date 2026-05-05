@@ -165,7 +165,7 @@ export interface AppConfig {
       auth: string;
       data?: string;
       storage?: string;
-      realtime?: string;
+      broadcast?: string;
     };
   };
 
@@ -209,7 +209,7 @@ export interface AppConfig {
 }
 
 const AUTH_ROUTE_PRESETS: Record<'quickback' | 'better-auth', AppConfig['routes']['api']> = {
-  'quickback':   { auth: '/auth/v1',  data: '/api/v1', storage: '/storage/v1', realtime: '/realtime/v1' },
+  'quickback':   { auth: '/auth/v1',  data: '/api/v1', storage: '/storage/v1', broadcast: '/broadcast/v1' },
   'better-auth': { auth: '/api/auth' },
 };
 

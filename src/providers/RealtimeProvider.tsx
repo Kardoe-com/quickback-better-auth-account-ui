@@ -18,7 +18,7 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import authClient from '@/auth/authClient';
 import { appConfig } from '@/config/app';
-import { getRealtimeWsUrl, getRealtimeTicketUrl } from '@/config/runtime';
+import { getBroadcastWsUrl, getBroadcastTicketUrl } from '@/config/runtime';
 
 export interface RealtimeMessage {
   type: 'postgres_changes' | 'broadcast';
@@ -63,7 +63,7 @@ async function fetchWsTicket(): Promise<string | null> {
       }
     }
 
-    const res = await fetch(getRealtimeTicketUrl(), {
+    const res = await fetch(getBroadcastTicketUrl(), {
       method: 'POST',
       credentials: 'include',
       headers,
@@ -79,7 +79,7 @@ async function fetchWsTicket(): Promise<string | null> {
 }
 
 export function RealtimeProvider({ children }: { children: ReactNode }) {
-  if (!appConfig.features.realtime || !appConfig.routes.api.realtime) {
+  if (!appConfig.features.realtime || !appConfig.routes.api.broadcast) {
     return <>{children}</>;
   }
 
@@ -117,7 +117,7 @@ function RealtimeProviderInner({ children }: { children: ReactNode }) {
     const ticket = await fetchWsTicket();
     if (!ticket || intentionalClose.current) return;
 
-    const wsUrl = `${getRealtimeWsUrl()}?ws_ticket=${encodeURIComponent(ticket)}&organizationId=${encodeURIComponent(orgId)}`;
+    const wsUrl = `${getBroadcastWsUrl()}?ws_ticket=${encodeURIComponent(ticket)}&organizationId=${encodeURIComponent(orgId)}`;
     const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
 
